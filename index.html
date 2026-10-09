@@ -1,0 +1,1200 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="study-hub-api" content="http://localhost:3000">
+<title>Study Hub</title>
+
+<link rel="stylesheet" href="css.css">
+</head>
+
+<body>
+
+<!-- =========================
+     PORTADA
+========================= -->
+
+<section id="landing">
+
+    <div class="browser">
+        <button onclick="location.reload()" title="Reiniciar">
+            ↻
+        </button>
+    </div>
+
+    <div class="cover">
+        <small>STUDY PLATFORM</small>
+
+        <h1>Study Hub</h1>
+
+        <p>
+            Organiza tus tareas. Aprende mejor. Avanza cada día.
+        </p>
+
+        <button class="enter" onclick="enterApp()">
+            Entrar →
+        </button>
+    </div>
+
+</section>
+
+
+<!-- =========================
+     APLICACIÓN
+========================= -->
+
+<section id="app">
+
+    <aside class="sidebar" id="sidebar">
+
+        <div class="logo">
+            <h2>Study Hub</h2>
+            <span>BETA PLATFORM</span>
+        </div>
+
+        <div class="nav-title">
+            Principal
+        </div>
+
+        <button class="nav active" data-page="home">
+            ⌂ &nbsp; Inicio
+        </button>
+
+        <button class="nav" data-page="organizer">
+            ▣ &nbsp; Organizador
+        </button>
+
+        <button class="nav" data-page="pending">
+            ○ &nbsp; Pendientes
+        </button>
+
+        <div class="nav-title">
+            Herramientas
+        </div>
+
+        <button class="nav" data-page="board">
+            ✎ &nbsp; Pizarra
+        </button>
+
+        <button class="nav" data-page="ai">
+            ✦ &nbsp; Asistente IA
+        </button>
+
+        <button class="nav" data-page="users">
+            ◎ &nbsp; Sistema de usuarios
+        </button>
+
+        <div class="nav-title">
+            Progreso
+        </div>
+
+        <button class="nav" data-page="performance">
+            ◔ &nbsp; Rendimiento
+        </button>
+
+        <button class="nav" data-page="profile">
+            ● &nbsp; Perfil
+        </button>
+
+        <div class="nav-title">
+            Más
+        </div>
+
+        <button class="nav" data-page="coming">
+            ＋ &nbsp; Próximamente
+        </button>
+
+    </aside>
+
+
+    <main class="main">
+
+        <div class="top">
+
+            <div>
+                <h1 id="title">
+                    Inicio
+                </h1>
+
+                <p id="description">
+                    Tu centro de estudio.
+                </p>
+            </div>
+
+            <button class="secondary" onclick="toggleMenu()">
+                ☰
+            </button>
+
+        </div>
+
+
+        <!-- =========================
+             INICIO
+        ========================= -->
+
+        <section class="page active" id="page-home">
+
+            <div class="card welcome">
+
+                <small>BIENVENIDO</small>
+
+                <h2>
+                    Organiza tus tareas y estudia de una forma más inteligente.
+                </h2>
+
+                <p>
+                    Todo lo esencial de tu vida escolar en un solo lugar.
+                </p>
+
+            </div>
+
+            <div class="section">
+                <h3>Resumen</h3>
+            </div>
+
+            <div class="grid g4">
+
+                <div class="card stat">
+                    <label>Completadas</label>
+                    <div class="number" id="completedHome">0</div>
+                    <span class="muted">tareas</span>
+                </div>
+
+                <div class="card stat">
+                    <label>Pendientes</label>
+                    <div class="number" id="pendingHome">0</div>
+                    <span class="muted">tareas</span>
+                </div>
+
+                <div class="card stat">
+                    <label>Rendimiento</label>
+                    <div class="number" id="percentageHome">0%</div>
+                    <span class="muted">completado</span>
+                </div>
+
+                <div class="card stat">
+                    <label>Horas</label>
+                    <div class="number">
+                        <span id="hoursHome">0</span> h
+                    </div>
+                    <span class="muted">registradas</span>
+                </div>
+
+            </div>
+
+            <div class="section">
+                <h3>Próximas tareas</h3>
+
+                <button class="secondary" onclick="showPage('organizer')">
+                    Ver todas
+                </button>
+            </div>
+
+            <div class="task-list" id="homeTasks"></div>
+
+        </section>
+
+
+        <!-- =========================
+             ORGANIZADOR
+        ========================= -->
+
+        <section class="page" id="page-organizer">
+
+            <div class="section">
+
+                <div>
+                    <h2>Tus tareas</h2>
+
+                    <p class="muted">
+                        Añade, filtra y revisa lo que tienes por hacer.
+                    </p>
+                </div>
+
+                <button class="primary" onclick="openTask()">
+                    + Nueva tarea
+                </button>
+
+            </div>
+
+            <div class="filters">
+
+                <button class="filter active" data-filter="all">
+                    Todas
+                </button>
+
+                <button class="filter" data-filter="pending">
+                    Pendientes
+                </button>
+
+                <button class="filter" data-filter="completed">
+                    Completadas
+                </button>
+
+            </div>
+
+            <div class="task-list" id="organizerTasks"></div>
+
+        </section>
+
+
+        <!-- =========================
+             PENDIENTES
+        ========================= -->
+
+        <section class="page" id="page-pending">
+
+            <div class="card">
+
+                <div class="section">
+
+                    <h3>Por completar</h3>
+
+                    <strong id="pendingCount">
+                        0
+                    </strong>
+
+                </div>
+
+                <div class="task-list" id="pendingTasks"></div>
+
+            </div>
+
+        </section>
+
+
+        <!-- =========================
+             PIZARRA
+        ========================= -->
+
+        <section class="page" id="page-board">
+
+            <div class="section">
+
+                <div>
+                    <h2>Área de trabajo</h2>
+
+                    <p class="muted">
+                        Elige una herramienta; tus notas se guardan automáticamente.
+                    </p>
+                </div>
+
+            </div>
+
+            <div class="board">
+
+                <div class="tools">
+
+                    <button
+                        class="tool active"
+                        id="pen"
+                        onclick="setTool('pen')">
+                        ✎ Lápiz
+                    </button>
+
+                    <button
+                        class="tool"
+                        id="eraser"
+                        onclick="setTool('eraser')">
+                        ◌ Borrador
+                    </button>
+
+                    <button
+                        class="tool"
+                        id="textTool"
+                        onclick="setTool('text')">
+                        T Texto
+                    </button>
+
+                    <button
+                        class="tool"
+                        onclick="undo()">
+                        ↶ Deshacer
+                    </button>
+
+                    <button
+                        class="tool"
+                        onclick="redo()">
+                        ↷ Rehacer
+                    </button>
+
+                    <label style="font-size:10px">
+                        Grosor
+                    </label>
+
+                    <input
+                        type="range"
+                        id="size"
+                        min="1"
+                        max="30"
+                        value="4">
+
+                    <label style="font-size:10px">
+                        Color
+                    </label>
+
+                    <input
+                        type="color"
+                        id="color"
+                        value="#000000">
+
+                    <button
+                        class="tool"
+                        onclick="clearCanvas()">
+                        Limpiar
+                    </button>
+
+                </div>
+
+                <div class="board-writing">
+                    <label for="boardTextInput">
+                        Escribe una nota
+                    </label>
+
+                    <textarea
+                        id="boardTextInput"
+                        rows="2"
+                        placeholder="Escribe aquí y colócala en la pizarra..."></textarea>
+
+                    <p class="board-hint">
+                        Para escribir, elige «Texto» y haz clic en el lugar donde quieres poner la nota.
+                    </p>
+                </div>
+
+                <canvas id="canvas"></canvas>
+
+            </div>
+
+        </section>
+
+
+        <!-- =========================
+             IA
+        ========================= -->
+
+        <section class="page" id="page-ai">
+
+            <div class="card">
+
+                <p style="color:#777;font-size:12px;margin-top:8px">
+                    Aquí podrás encontrar apoyo para tus preguntas y sesiones de estudio.
+                </p>
+
+                <div
+                    style="
+                    margin-top:25px;
+                    padding:20px;
+                    background:#f2f2f2;
+                    border-radius:12px;">
+                    🤖 Esta función se habilitará al conectar un servicio mediante un servidor seguro.
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- =========================
+             USUARIOS
+        ========================= -->
+
+        <section class="page" id="page-users">
+
+            <div class="card">
+
+                <h2>Elige tu modalidad de uso</h2>
+
+                <p class="muted" style="margin-top:7px">
+                    Selecciona el perfil que mejor se adapta a ti.
+                </p>
+
+
+                <div class="user-choice">
+
+                    <button
+                        class="user-type"
+                        id="role-teacher"
+                        onclick="selectRole('teacher')">
+
+                        <div class="user-icon">
+                            👨‍🏫
+                        </div>
+
+                        <h3>
+                            Profesor
+                        </h3>
+
+                        <p>
+                            Crea y administra tus clases para organizar a tus estudiantes.
+                        </p>
+
+                    </button>
+
+
+                    <button
+                        class="user-type"
+                        id="role-student"
+                        onclick="selectRole('student')">
+
+                        <div class="user-icon">
+                            🎓
+                        </div>
+
+                        <h3>
+                            Estudiante
+                        </h3>
+
+                        <p>
+                            Únete a tus clases y utiliza las herramientas de Study Hub.
+                        </p>
+
+                    </button>
+
+
+                    <button
+                        class="user-type"
+                        id="role-personal"
+                        onclick="selectRole('personal')">
+
+                        <div class="user-icon">
+                            👤
+                        </div>
+
+                        <h3>
+                            Usuario personal
+                        </h3>
+
+                        <p>
+                            Utiliza Study Hub para organizar tus propias tareas y estudiar.
+                        </p>
+
+                    </button>
+
+                </div>
+
+
+                <div class="user-form" id="userForm">
+
+                    <div class="form">
+
+                        <label>
+                            Nombre
+                        </label>
+
+                        <input
+                            id="userName"
+                            placeholder="Escribe tu nombre">
+
+                    </div>
+
+
+                    <div class="form">
+
+                        <label id="userEmailLabel">
+                            Correo electrónico
+                        </label>
+
+                        <input
+                            id="userEmail"
+                            type="email"
+                            placeholder="tu@correo.com"
+                            oninput="clearInstitutionDetection()">
+
+                    </div>
+
+                    <!-- Sección de instituciones educativas: visible solo para profesor y estudiante. -->
+                    <div
+                        id="institutionForm"
+                        class="institution-feedback"
+                        style="display:none;margin:15px 0;">
+
+                        <h3 style="font-size:13px;margin-bottom:5px">
+                            Institución educativa
+                        </h3>
+
+                        <p style="margin-bottom:10px">
+                            Detecta la institución a partir del dominio de tu correo institucional.
+                        </p>
+
+                        <button
+                            class="secondary"
+                            type="button"
+                            onclick="detectInstitution()">
+                            Detectar institución
+                        </button>
+
+                    </div>
+
+                    <button
+                        class="primary"
+                        onclick="saveStudyUser()">
+                        Continuar →
+                    </button>
+
+                </div>
+
+
+                <div class="user-result" id="userResult"></div>
+
+            </div>
+
+            <!-- Sección de instituciones educativas y oferta beta. -->
+            <div
+                class="card institution-panel"
+                id="institutionPanel"
+                style="display:none;">
+            </div>
+
+            <!-- PROFESOR -->
+
+            <div
+                class="card"
+                id="teacherPanel"
+                style="display:none;margin-top:15px;">
+
+                <div class="section" style="margin-top:0">
+
+                    <div>
+                        <h3>
+                            Mis clases
+                        </h3>
+
+                        <p class="muted">
+                            Crea una clase y comparte su código con tus estudiantes.
+                        </p>
+                    </div>
+
+                    <button
+                        class="primary"
+                        onclick="openClassModal()">
+                        + Crear clase
+                    </button>
+
+                </div>
+
+                <div
+                    class="class-list"
+                    id="teacherClasses">
+                </div>
+
+            </div>
+
+
+            <!-- ESTUDIANTE -->
+
+            <div
+                class="card"
+                id="studentPanel"
+                style="display:none;margin-top:15px;">
+
+                <div class="section" style="margin-top:0">
+
+                    <div>
+                        <h3>
+                            Mis clases
+                        </h3>
+
+                        <p class="muted">
+                            Escribe el código que te compartió tu profesor para unirte a su clase.
+                        </p>
+                    </div>
+
+                    <button
+                        class="primary"
+                        onclick="joinClass()">
+                        + Unirse a clase
+                    </button>
+
+                </div>
+
+                <div
+                    class="class-list"
+                    id="studentClasses">
+                </div>
+
+            </div>
+
+
+            <!-- PERSONAL -->
+
+            <div
+                class="card"
+                id="personalPanel"
+                style="display:none;margin-top:15px;">
+
+                <h3>
+                    Tu espacio personal
+                </h3>
+
+                <p
+                    class="muted"
+                    style="margin-top:8px">
+                    Puedes utilizar el organizador, la pizarra, el rendimiento y las demás herramientas de Study Hub para estudiar por tu cuenta.
+                </p>
+
+                <button
+                    class="primary"
+                    style="margin-top:18px"
+                    onclick="showPage('organizer')">
+                    Ir al organizador →
+                </button>
+
+            </div>
+
+        </section>
+
+
+        <!-- =========================
+             RENDIMIENTO
+        ========================= -->
+
+        <section class="page" id="page-performance">
+
+            <div class="grid g3">
+
+                <div class="card">
+
+                    <span class="muted">
+                    Progreso de tareas
+                    </span>
+
+                    <div
+                        class="big"
+                        id="performancePercent">
+                        0%
+                    </div>
+
+                    <div class="progress">
+                        <div id="progress"></div>
+                    </div>
+
+                </div>
+
+
+                <div class="card stat">
+
+                    <label>
+                        Tareas completadas
+                    </label>
+
+                    <div
+                        class="number"
+                        id="performanceCompleted">
+                        0
+                    </div>
+
+                </div>
+
+
+                <div class="card stat">
+
+                    <label>
+                        Tareas pendientes
+                    </label>
+
+                    <div
+                        class="number"
+                        id="performancePending">
+                        0
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <div class="section">
+                <h3>Horas de estudio</h3>
+            </div>
+
+
+            <div class="grid g2">
+
+                <div class="card">
+
+                    <span class="muted">
+                        Total de horas
+                    </span>
+
+                    <div class="big">
+                        <span id="totalHours">0</span> h
+                    </div>
+
+                    <div
+                        style="
+                        display:flex;
+                        gap:7px;
+                        margin-top:15px;">
+
+                        <input
+                            id="hourInput"
+                            type="number"
+                            min="0"
+                            step="0.5"
+                            placeholder="Cantidad"
+                            style="
+                            flex:1;
+                            padding:10px;
+                            border:1px solid #ddd;
+                            border-radius:9px;">
+
+                        <button
+                            class="primary"
+                            onclick="addHours()">
+                            + Añadir
+                        </button>
+
+                    </div>
+
+
+                    <div
+                        style="
+                        display:flex;
+                        gap:7px;
+                        margin-top:8px;
+                        flex-wrap:wrap;">
+
+                        <button
+                            class="secondary"
+                            onclick="subtractHours()">
+                            − Restar
+                        </button>
+
+                        <button
+                            class="secondary"
+                            onclick="editHours()">
+                            Editar total
+                        </button>
+
+                        <button
+                            class="secondary"
+                            onclick="resetHours()">
+                            Reiniciar
+                        </button>
+
+                    </div>
+
+                </div>
+
+
+                <div class="card">
+
+                    <div class="chart-heading">
+                        <span class="muted">
+                            Horas por día
+                        </span>
+
+                        <div class="chart-nav">
+                            <button
+                                type="button"
+                                aria-label="Ver semana anterior"
+                                title="Ver semana anterior"
+                                onclick="changeChartWeek(-1)">
+                                ←
+                            </button>
+
+                            <span
+                                class="chart-week-label"
+                                id="chartWeekLabel">
+                                Esta semana
+                            </span>
+
+                            <button
+                                type="button"
+                                id="nextChartWeek"
+                                aria-label="Ver semana siguiente"
+                                title="Ver semana siguiente"
+                                onclick="changeChartWeek(1)">
+                                →
+                            </button>
+                        </div>
+                    </div>
+
+                    <p
+                        style="
+                        font-size:10px;
+                        color:#888;
+                        margin:7px 0 15px;">
+                        Añade horas desde aquí o selecciona un día para corregirlas.
+                    </p>
+
+                    <div
+                        class="chart"
+                        id="chart">
+                    </div>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- =========================
+             PERFIL
+        ========================= -->
+
+        <section class="page" id="page-profile">
+
+            <div class="card">
+
+                <div class="profile-head">
+
+                    <div
+                        class="avatar"
+                        id="avatar">
+                        S
+                    </div>
+
+                    <div>
+
+                        <h2 id="profileName">
+                            Sin cuenta
+                        </h2>
+
+                        <p
+                            id="profileInfo"
+                            class="muted">
+                            Crea una cuenta para guardar tus datos por separado.
+                        </p>
+
+                    </div>
+
+                </div>
+
+
+                <div class="grid g2">
+
+                    <div class="form">
+
+                        <label>
+                            Nombre
+                        </label>
+
+                        <input
+                            id="nameInput"
+                            placeholder="Tu nombre">
+
+                    </div>
+
+
+                    <div class="form">
+
+                        <label>
+                            Correo electrónico
+                        </label>
+
+                        <input
+                            id="emailInput"
+                            type="email"
+                            placeholder="tu@correo.com">
+
+                    </div>
+
+                </div>
+
+
+                <div class="form">
+
+                    <label>
+                        Grado
+                    </label>
+
+                    <select id="gradeInput">
+
+                        <option>1.º de secundaria</option>
+                        <option>2.º de secundaria</option>
+                        <option>3.º de secundaria</option>
+                        <option>4.º de secundaria</option>
+                        <option>5.º de secundaria</option>
+
+                    </select>
+
+                </div>
+
+
+                <div style="display:flex;gap:8px;flex-wrap:wrap">
+
+                    <button
+                        class="primary"
+                        onclick="saveAccount()">
+                        Crear / guardar cuenta
+                    </button>
+
+                    <button
+                        class="secondary"
+                        onclick="logout()">
+                        Cerrar sesión
+                    </button>
+
+                </div>
+
+            </div>
+
+
+            <div class="section">
+                <h3>Seleccionar otra cuenta</h3>
+            </div>
+
+
+            <div class="card">
+
+                <div
+                    class="accounts"
+                    id="accounts">
+                </div>
+
+            </div>
+
+
+            <div class="section">
+                <h3>Copia de seguridad</h3>
+            </div>
+
+
+            <div class="card">
+
+                <p
+                    class="muted"
+                    style="margin-bottom:14px;">
+                    Descarga tus perfiles, tareas, horas, actividad y pizarras guardados en este navegador. Las clases compartidas se conservan en el backend y no se incluyen en esta copia. El archivo puede contener datos personales; guárdalo en un lugar privado.
+                </p>
+
+                <div style="display:flex;gap:8px;flex-wrap:wrap">
+
+                    <button
+                        class="primary"
+                        onclick="exportBackup()">
+                        Descargar copia de seguridad
+                    </button>
+
+                    <button
+                        class="secondary"
+                        onclick="document.getElementById('backupFileInput').click()">
+                        Restaurar copia
+                    </button>
+
+                    <input
+                        id="backupFileInput"
+                        type="file"
+                        accept="application/json,.json"
+                        hidden>
+
+                </div>
+
+                <p
+                    class="muted"
+                    style="margin-top:12px;">
+                    Restaurar reemplaza los datos locales de Study Hub en este navegador; no modifica las clases compartidas.
+                </p>
+
+            </div>
+
+
+            <div class="section">
+                <h3>Zona de cuenta</h3>
+            </div>
+
+
+            <div class="card">
+
+                <p
+                    class="muted"
+                    style="margin-bottom:14px;">
+                    Eliminar una cuenta también elimina sus tareas, horas, actividad y pizarra guardadas en este navegador.
+                </p>
+
+                <button
+                    class="danger"
+                    onclick="deleteCurrentAccount()">
+                    🗑 Eliminar cuenta actual
+                </button>
+
+            </div>
+
+        </section>
+
+
+        <!-- =========================
+             PRÓXIMAMENTE
+        ========================= -->
+
+        <section class="page" id="page-coming">
+
+            <div class="card coming">
+
+                <div>
+
+                    <div
+                        style="
+                        font-size:45px;
+                        margin-bottom:15px;">
+                        ✦
+                    </div>
+
+                    <h2>
+                        Funciones en camino
+                    </h2>
+
+                    <p>
+                        Las novedades aparecerán en este espacio.
+                    </p>
+
+                    <p
+                        style="
+                        margin-top:20px;
+                        color:#aaa;">
+                        Nuevas herramientas · Más organización · Más posibilidades
+                    </p>
+
+                </div>
+
+            </div>
+
+        </section>
+
+    </main>
+
+</section>
+
+
+<!-- =========================
+     MODAL TAREA
+========================= -->
+
+<div class="modal-bg" id="taskModal">
+
+    <div class="modal">
+
+        <div class="modal-head">
+
+            <h2>Nueva tarea</h2>
+
+            <button
+                class="close"
+                onclick="closeTask()">
+                ×
+            </button>
+
+        </div>
+
+
+        <div class="form">
+
+            <label>Nombre</label>
+
+            <input
+                id="taskName"
+                placeholder="Ej. Tarea de matemática">
+
+        </div>
+
+
+        <div class="form">
+
+            <label>Materia</label>
+
+            <select id="taskSubject">
+
+                <option>Matemáticas</option>
+                <option>Comunicación</option>
+                <option>Ciencia</option>
+                <option>Historia</option>
+                <option>Inglés</option>
+                <option>Otra</option>
+
+            </select>
+
+        </div>
+
+
+        <div class="form">
+
+            <label>Fecha</label>
+
+            <input
+                id="taskDate"
+                type="date">
+
+        </div>
+
+
+        <button
+            class="primary"
+            onclick="createTask()">
+            Crear tarea
+        </button>
+
+    </div>
+
+</div>
+
+
+<!-- =========================
+     MODAL CLASE
+========================= -->
+
+<div class="modal-bg" id="classModal">
+
+    <div class="modal">
+
+        <div class="modal-head">
+
+            <h2>
+                Crear clase
+            </h2>
+
+            <button
+                class="close"
+                onclick="closeClassModal()">
+                ×
+            </button>
+
+        </div>
+
+
+        <div class="form">
+
+            <label>
+                Nombre de la clase
+            </label>
+
+            <input
+                id="className"
+                placeholder="Ej. Matemáticas 4.º B">
+
+        </div>
+
+
+        <div class="form">
+
+            <label>
+                Código de clase
+            </label>
+
+            <input
+                id="classCode"
+                placeholder="Ej. MAT4B">
+
+        </div>
+
+
+        <button
+            class="primary"
+            onclick="createClass()">
+            Crear clase
+        </button>
+
+    </div>
+
+</div>
+
+
+<div class="toast" id="toast"></div>
+
+
+<script src="app.js"></script>
+
+</body>
+</html>

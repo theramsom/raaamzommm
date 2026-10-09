@@ -1,0 +1,4 @@
+backend/.env
+backend/data/classes.json
+backend/node_modules/
+/study hub/
