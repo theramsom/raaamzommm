@@ -347,22 +347,15 @@
 
                 </div>
 
-                <div class="board-writing">
-                    <label for="boardTextInput">
-                        Escribe una nota
-                    </label>
-
+                <div class="canvas-stage">
+                    <canvas id="canvas"></canvas>
                     <textarea
-                        id="boardTextInput"
-                        rows="2"
-                        placeholder="Escribe aquí y colócala en la pizarra..."></textarea>
-
-                    <p class="board-hint">
-                        Para escribir, elige «Texto» y haz clic en el lugar donde quieres poner la nota.
-                    </p>
+                        id="boardTextEditor"
+                        class="board-text-editor hidden"
+                        aria-label="Escribir en la pizarra"
+                        placeholder="Escribe aquí..."
+                        spellcheck="true"></textarea>
                 </div>
-
-                <canvas id="canvas"></canvas>
 
             </div>
 
