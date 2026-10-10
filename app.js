@@ -2070,17 +2070,6 @@ function openBoardTextEditor(event){
 
     };
 
-    textarea.onblur = () => {
-        setTimeout(() => {
-            if(
-                document.activeElement !== textarea &&
-                !editor.classList.contains("hidden")
-            ){
-                commitBoardText();
-            }
-        }, 120);
-    };
-
 }
 
 
@@ -2204,6 +2193,10 @@ function stopDraw(){
 function setTool(value){
 
     tool = value;
+
+    if(value !== "text"){
+        hideBoardTextEditor();
+    }
 
     [
         ["pen","pen"],
