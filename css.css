@@ -438,6 +438,7 @@ button{
 ========================= */
 
 .board{
+    position:relative;
     background:linear-gradient(135deg, #f8fafc 0%, #eef2f7 100%);
     border:1px solid rgba(15, 23, 42, 0.08);
     border-radius:20px;
@@ -451,8 +452,21 @@ button{
     flex-wrap:wrap;
     align-items:center;
     padding:14px 16px 12px;
-    background:rgba(255,255,255,0.7);
+    background:rgba(255,255,255,0.75);
     border-bottom:1px solid rgba(15, 23, 42, 0.08);
+    position:sticky;
+    top:0;
+    z-index:2;
+}
+
+.tool{
+    min-width:72px;
+    min-height:38px;
+    display:inline-flex;
+    align-items:center;
+    justify-content:center;
+    gap:6px;
+    padding:10px 12px;
 }
 
 .tool.active{
@@ -510,7 +524,8 @@ button{
 
 #canvas{
     width:100%;
-    height:500px;
+    height:min(68vh, 560px);
+    min-height:360px;
     display:block;
     touch-action:none;
     background:
@@ -633,9 +648,25 @@ button{
     text-align:right;
 }
 
+@media(max-width:720px){
+    .tools{
+        gap:6px;
+    }
+
+    .tool{
+        flex:1 1 calc(50% - 6px);
+        min-width:unset;
+    }
+}
+
 @media(max-width:480px){
     .board-writing{
         grid-template-columns:1fr;
+    }
+
+    #canvas{
+        min-height:300px;
+        height:52vh;
     }
 }
 

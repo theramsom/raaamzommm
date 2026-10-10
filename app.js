@@ -1805,6 +1805,285 @@ function point(event){
 }
 
 
+function hideBoardTextEditor(){
+
+    const editor =
+        document.getElementById("boardTextEditor");
+
+    if(!editor){
+        return;
+    }
+
+    editor.classList.add("hidden");
+
+    const textarea =
+        document.getElementById("boardTextEditorInput");
+
+    if(textarea){
+        textarea.blur();
+    }
+
+}
+
+
+function commitBoardText(){
+
+    const editor =
+        document.getElementById("boardTextEditor");
+
+    const textarea =
+        document.getElementById("boardTextEditorInput");
+
+    if(
+        !editor ||
+        !textarea ||
+        !canvas ||
+        !ctx
+    ){
+        return;
+    }
+
+    const text =
+        textarea.value.trim();
+
+    if(!text){
+        hideBoardTextEditor();
+        return;
+    }
+
+    const boardRect =
+        canvas.getBoundingClientRect();
+
+    const editorRect =
+        editor.getBoundingClientRect();
+
+    const position = {
+        x:
+            Math.min(
+                Math.max(
+                    editorRect.left - boardRect.left + 8,
+                    8
+                ),
+                canvas.width - 30
+            ),
+        y:
+            Math.min(
+                Math.max(
+                    editorRect.top - boardRect.top + 12,
+                    8
+                ),
+                canvas.height - 20
+            )
+    };
+
+    undoStack.push(
+        canvas.toDataURL()
+    );
+
+    if(undoStack.length > 30){
+        undoStack.shift();
+    }
+
+    redoStack = [];
+
+    const fontSize =
+        Math.max(
+            12,
+            Math.min(
+                48,
+                Number(
+                    document.getElementById(
+                        "size"
+                    ).value
+                ) * 4
+            )
+        );
+
+    const textX =
+        Math.min(
+            position.x,
+            Math.max(8,canvas.width - 24)
+        );
+
+    const textY =
+        Math.min(
+            position.y,
+            Math.max(8,canvas.height - fontSize - 8)
+        );
+
+    const maxWidth =
+        Math.max(
+            20,
+            canvas.width - textX - 8
+        );
+
+    ctx.save();
+    ctx.globalCompositeOperation = "source-over";
+    ctx.fillStyle =
+        document.getElementById(
+            "color"
+        ).value;
+    ctx.font =
+        `${fontSize}px "Segoe UI", Arial, sans-serif`;
+    ctx.textBaseline = "top";
+
+    let lineNumber = 0;
+    const lineHeight = fontSize + 5;
+
+    text.split(/\r?\n/).forEach(line => {
+
+        let currentLine = "";
+
+        line.split(/\s+/).forEach(word => {
+
+            const candidate =
+                currentLine
+                ? currentLine + " " + word
+                : word;
+
+            if(
+                currentLine &&
+                ctx.measureText(candidate).width > maxWidth
+            ){
+
+                ctx.fillText(
+                    currentLine,
+                    textX,
+                    textY + lineNumber * lineHeight,
+                    maxWidth
+                );
+
+                lineNumber++;
+                currentLine = word;
+
+            }else{
+
+                currentLine = candidate;
+
+            }
+
+        });
+
+        if(currentLine){
+
+            ctx.fillText(
+                currentLine,
+                textX,
+                textY + lineNumber * lineHeight,
+                maxWidth
+            );
+
+            lineNumber++;
+
+        }
+
+    });
+
+    ctx.restore();
+
+    boardData =
+        canvas.toDataURL();
+
+    localStorage.setItem(
+        accountKey("board"),
+        boardData
+    );
+
+    hideBoardTextEditor();
+    textarea.value = "";
+    document.getElementById("boardTextInput").value = "";
+    toast("Nota añadida a la pizarra.");
+
+}
+
+
+function cancelBoardText(){
+
+    const textarea =
+        document.getElementById("boardTextEditorInput");
+
+    if(textarea){
+        textarea.value = "";
+    }
+
+    hideBoardTextEditor();
+
+}
+
+
+function openBoardTextEditor(event){
+
+    const editor =
+        document.getElementById("boardTextEditor");
+
+    const textarea =
+        document.getElementById("boardTextEditorInput");
+
+    if(
+        !editor ||
+        !textarea ||
+        !canvas
+    ){
+        return;
+    }
+
+    const position =
+        point(event);
+
+    const editorWidth = 240;
+    const editorHeight = 110;
+
+    const left =
+        Math.min(
+            Math.max(position.x + 12, 12),
+            canvas.width - editorWidth - 12
+        );
+
+    const top =
+        Math.min(
+            Math.max(position.y + 12, 12),
+            canvas.height - editorHeight - 12
+        );
+
+    editor.style.left = `${left}px`;
+    editor.style.top = `${top}px`;
+    editor.classList.remove("hidden");
+
+    textarea.value =
+        document.getElementById("boardTextInput").value.trim() || "";
+    textarea.focus();
+    textarea.select();
+
+    textarea.onkeydown = event => {
+
+        if(
+            event.key === "Enter" &&
+            !event.shiftKey
+        ){
+            event.preventDefault();
+            commitBoardText();
+        }
+
+        if(event.key === "Escape"){
+            cancelBoardText();
+        }
+
+    };
+
+    textarea.onblur = () => {
+        setTimeout(() => {
+            if(
+                document.activeElement !== textarea &&
+                !editor.classList.contains("hidden")
+            ){
+                commitBoardText();
+            }
+        }, 120);
+    };
+
+}
+
+
 function startDraw(event){
 
     if(
@@ -1818,141 +2097,16 @@ function startDraw(event){
 
     if(tool === "text"){
 
-        const text =
+        const existingText =
             document.getElementById(
                 "boardTextInput"
             ).value.trim();
 
-        if(!text){
-
-            toast(
-                "Escribe una nota antes de colocarla."
-            );
-
-            return;
-
+        if(existingText && !document.getElementById("boardTextEditor").classList.contains("hidden")){
+            commitBoardText();
         }
 
-        const position =
-            point(event);
-
-        undoStack.push(
-            canvas.toDataURL()
-        );
-
-        if(undoStack.length > 30){
-            undoStack.shift();
-        }
-
-        redoStack = [];
-
-        const fontSize =
-            Math.max(
-                12,
-                Math.min(
-                    48,
-                    Number(
-                        document.getElementById(
-                            "size"
-                        ).value
-                    ) * 4
-                )
-            );
-
-        const textX =
-            Math.min(
-                position.x,
-                Math.max(8,canvas.width - 24)
-            );
-
-        const textY =
-            Math.min(
-                position.y,
-                Math.max(8,canvas.height - fontSize - 8)
-            );
-
-        const maxWidth =
-            Math.max(
-                20,
-                canvas.width - textX - 8
-            );
-
-        ctx.save();
-        ctx.globalCompositeOperation = "source-over";
-        ctx.fillStyle =
-            document.getElementById(
-                "color"
-            ).value;
-        ctx.font =
-            `${fontSize}px "Segoe UI", Arial, sans-serif`;
-        ctx.textBaseline = "top";
-
-        let lineNumber = 0;
-        const lineHeight = fontSize + 5;
-
-        text.split(/\r?\n/).forEach(line => {
-
-            let currentLine = "";
-
-            line.split(/\s+/).forEach(word => {
-
-                const candidate =
-                    currentLine
-                    ? currentLine + " " + word
-                    : word;
-
-                if(
-                    currentLine &&
-                    ctx.measureText(candidate).width > maxWidth
-                ){
-
-                    ctx.fillText(
-                        currentLine,
-                        textX,
-                        textY + lineNumber * lineHeight,
-                        maxWidth
-                    );
-
-                    lineNumber++;
-                    currentLine = word;
-
-                }else{
-
-                    currentLine = candidate;
-
-                }
-
-            });
-
-            if(currentLine){
-
-                ctx.fillText(
-                    currentLine,
-                    textX,
-                    textY + lineNumber * lineHeight,
-                    maxWidth
-                );
-
-                lineNumber++;
-
-            }
-
-        });
-
-        ctx.restore();
-
-        boardData =
-            canvas.toDataURL();
-
-        localStorage.setItem(
-            accountKey("board"),
-            boardData
-        );
-
-        toast(
-            "Nota añadida a la pizarra."
-        );
-
+        openBoardTextEditor(event);
         return;
 
     }
