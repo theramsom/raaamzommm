@@ -476,50 +476,8 @@ button{
     box-shadow:0 8px 18px rgba(17, 24, 39, 0.18);
 }
 
-.board-writing{
-    display:grid;
-    grid-template-columns:minmax(0,1fr) auto;
-    gap:8px;
-    align-items:center;
-    padding:12px 16px 10px;
-    border-bottom:1px solid rgba(15, 23, 42, 0.08);
-    background:rgba(255,255,255,0.38);
-}
-
-.board-writing label{
-    grid-column:1 / -1;
-    font-size:10px;
-    font-weight:bold;
-    color:#374151;
-    letter-spacing:0.08em;
-    text-transform:uppercase;
-}
-
-.board-writing textarea{
-    width:100%;
-    min-height:48px;
-    resize:vertical;
-    padding:10px 12px;
-    border:1px solid rgba(15, 23, 42, 0.1);
-    border-radius:12px;
-    font:inherit;
-    font-size:11px;
-    background:rgba(255,255,255,0.9);
-    color:#111827;
-    transition:border-color .2s ease, box-shadow .2s ease;
-}
-
-.board-writing textarea:focus{
-    outline:none;
-    border-color:rgba(37, 99, 235, 0.45);
-    box-shadow:0 0 0 4px rgba(59, 130, 246, 0.08);
-}
-
-.board-hint{
-    grid-column:1 / -1;
-    color:#6b7280;
-    font-size:10px;
-    line-height:1.5;
+.canvas-stage{
+    position:relative;
 }
 
 #canvas{
@@ -535,6 +493,36 @@ button{
     background-size:26px 26px, 26px 26px, 100% 100%;
     border-top:1px solid rgba(15, 23, 42, 0.04);
     box-shadow:inset 0 1px 0 rgba(255,255,255,0.7);
+}
+
+.board-text-editor{
+    position:absolute;
+    z-index:3;
+    min-width:70px;
+    min-height:1.4em;
+    max-width:calc(100% - 16px);
+    padding:0;
+    resize:none;
+    overflow:hidden;
+    border:1px dashed transparent;
+    border-radius:2px;
+    outline:none;
+    background:transparent;
+    font-family:"Segoe UI",Arial,sans-serif;
+    line-height:1.35;
+    white-space:pre-wrap;
+    overflow-wrap:anywhere;
+    color:#111827;
+    cursor:text;
+}
+
+.board-text-editor:focus{
+    border-color:rgba(37, 99, 235, 0.55);
+    background:rgba(255,255,255,0.3);
+}
+
+.board-text-editor.hidden{
+    display:none;
 }
 
 /* =========================
@@ -660,10 +648,6 @@ button{
 }
 
 @media(max-width:480px){
-    .board-writing{
-        grid-template-columns:1fr;
-    }
-
     #canvas{
         min-height:300px;
         height:52vh;
