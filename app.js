@@ -1694,6 +1694,10 @@ function setupCanvas(){
 
 function resizeCanvas(preserve = true){
 
+    if(isBoardTextEditing()){
+        commitBoardText();
+    }
+
     if(
         !canvas ||
         canvas.clientWidth === 0 ||
@@ -2065,16 +2069,6 @@ function startDraw(event){
     }
 
     if(tool === "text"){
-
-        const existingText =
-            document.getElementById(
-                "boardTextInput"
-            ).value.trim();
-
-        if(existingText && !document.getElementById("boardTextEditor").classList.contains("hidden")){
-            commitBoardText();
-        }
-
         openBoardTextEditor(event);
         return;
 
@@ -2172,11 +2166,14 @@ function stopDraw(){
 
 function setTool(value){
 
-    tool = value;
-
-    if(value !== "text"){
-        hideBoardTextEditor();
+    if(
+        value !== "text" &&
+        isBoardTextEditing()
+    ){
+        commitBoardText();
     }
+
+    tool = value;
 
     [
         ["pen","pen"],
@@ -2240,6 +2237,10 @@ function restoreImage(data){
 
 function undo(){
 
+    if(isBoardTextEditing()){
+        commitBoardText();
+    }
+
     if(!undoStack.length){
 
         toast(
@@ -2263,6 +2264,10 @@ function undo(){
 
 function redo(){
 
+    if(isBoardTextEditing()){
+        commitBoardText();
+    }
+
     if(!redoStack.length){
 
         toast(
@@ -2285,6 +2290,10 @@ function redo(){
 
 
 function clearCanvas(){
+
+    if(isBoardTextEditing()){
+        commitBoardText();
+    }
 
     if(
         !confirm(
