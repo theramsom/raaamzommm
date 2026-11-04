@@ -1049,15 +1049,15 @@ button{
 ========================= */
 
 :root{
-    --black:#26352f;
-    --dark:#1d2b25;
+    --black:#252525;
+    --dark:#171717;
     --gray:#718078;
     --light:#f5f4ef;
     --border:#e4e3da;
     --white:#fff;
-    --accent:#557b68;
-    --accent-dark:#3f6653;
-    --accent-soft:#eaf1eb;
+    --accent:#555;
+    --accent-dark:#171717;
+    --accent-soft:#efefed;
     --danger:#a64f55;
 }
 
@@ -1084,7 +1084,7 @@ select:focus-visible{
     height:auto;
     padding:35px 20px;
     background:
-        radial-gradient(ellipse at 12% 88%,#e9eee6 0,transparent 33%),
+        radial-gradient(ellipse at 12% 88%,#ecebe7 0,transparent 33%),
         radial-gradient(ellipse at 90% 12%,#f1ecdf 0,transparent 34%),
         #f8f7f2;
 }
@@ -1093,7 +1093,7 @@ select:focus-visible{
 #landing::after{
     content:"";
     position:absolute;
-    border:1px solid #557b681c;
+    border:1px solid #3434341c;
     border-radius:50%;
     pointer-events:none;
 }
@@ -1149,7 +1149,7 @@ select:focus-visible{
 .cover small{
     display:inline-block;
     padding:8px 13px;
-    border:1px solid #dce6dc;
+    border:1px solid #e1e1dc;
     border-radius:30px;
     background:var(--accent-soft);
     color:var(--accent-dark);
@@ -1169,15 +1169,15 @@ select:focus-visible{
 }
 
 .cover p{
-    color:#68766e;
+    color:#6f6f6f;
     font-size:15px;
     line-height:1.7;
 }
 
 .enter,
 .primary{
-    background:var(--accent-dark);
-    box-shadow:0 8px 18px #3f665326;
+    background:#171717;
+    box-shadow:0 8px 18px #17171726;
 }
 
 .enter{
@@ -1188,8 +1188,8 @@ select:focus-visible{
 
 .enter:hover,
 .primary:hover{
-    background:#345641;
-    box-shadow:0 10px 24px #3f665340;
+    background:#303030;
+    box-shadow:0 10px 24px #17171730;
 }
 
 #app{
@@ -1198,7 +1198,7 @@ select:focus-visible{
 }
 
 .sidebar{
-    background:linear-gradient(180deg,#22332b 0%,#192720 100%);
+    background:linear-gradient(180deg,#202020 0%,#111 100%);
     border-right:1px solid #ffffff0d;
     padding:29px 15px;
 }
@@ -1210,18 +1210,18 @@ select:focus-visible{
 }
 
 .logo span{
-    color:#a5b5a9;
+    color:#aaa;
     letter-spacing:2.2px;
 }
 
 .nav-title{
-    color:#9aa99d;
+    color:#999;
     font-weight:700;
     letter-spacing:1.4px;
 }
 
 .nav{
-    color:#c1cbc2;
+    color:#ccc;
     padding:12px 13px;
 }
 
@@ -1231,8 +1231,8 @@ select:focus-visible{
 }
 
 .nav.active{
-    background:#eaf1eb;
-    color:var(--accent-dark);
+    background:#f0f0ee;
+    color:#171717;
     font-weight:700;
 }
 
@@ -1269,9 +1269,9 @@ select:focus-visible{
     overflow:hidden;
     border:0;
     background:
-        radial-gradient(circle at 88% 8%,#73957a24 0,transparent 35%),
-        linear-gradient(120deg,#17271d,#203629 72%,#294532);
-    box-shadow:0 12px 28px #263b301a;
+        radial-gradient(circle at 88% 8%,#ffffff18 0,transparent 35%),
+        linear-gradient(120deg,#111,#202020 72%,#303030);
+    box-shadow:0 12px 28px #17171722;
 }
 
 .welcome::after{
@@ -1288,7 +1288,7 @@ select:focus-visible{
 }
 
 .welcome small{
-    color:#c3d3c4;
+    color:#c6c6c6;
     font-weight:700;
     letter-spacing:2.5px;
 }
@@ -1301,7 +1301,7 @@ select:focus-visible{
 }
 
 .welcome p{
-    color:#d0dbd0;
+    color:#d0d0d0;
     font-size:12px;
 }
 
@@ -1347,7 +1347,7 @@ select:focus-visible{
 .secondary:hover,
 .filter:hover,
 .tool:hover{
-    border-color:#cbd9cd;
+    border-color:#c8c8c4;
     background:var(--accent-soft);
 }
 
@@ -1358,7 +1358,7 @@ select:focus-visible{
 }
 
 .task:hover{
-    border-color:#cfdbd0;
+    border-color:#d0d0cc;
     box-shadow:0 7px 18px #283a3010;
 }
 
@@ -1395,14 +1395,14 @@ select:focus-visible{
 }
 
 .user-type:hover{
-    border-color:#cbd9cd;
+    border-color:#c8c8c4;
     box-shadow:0 10px 24px #303b3010;
 }
 
 .user-type.selected,
 .account.selected{
     border-color:var(--accent);
-    background:#f0f5f0;
+    background:#f0f0ee;
 }
 
 .form input,
@@ -1414,7 +1414,7 @@ select:focus-visible{
 .form input:focus,
 .form select:focus{
     border-color:var(--accent);
-    box-shadow:0 0 0 3px #557b681a;
+    box-shadow:0 0 0 3px #3333331a;
 }
 
 .institution-list,
@@ -1445,7 +1445,7 @@ select:focus-visible{
 }
 
 .close:hover{
-    background:#dce8dd;
+    background:#e2e2df;
 }
 
 .toast{
@@ -1457,15 +1457,15 @@ select:focus-visible{
     position:relative;
     overflow:hidden;
     padding:clamp(25px,4vw,42px);
-    border:1px solid #d5e0d4;
+    border:1px solid #deded9;
     border-radius:20px;
     background:
-        radial-gradient(circle at 90% 10%,#82a58a24 0,transparent 34%),
-        linear-gradient(120deg,#edf3ec,#e3ede3 75%,#dce8dd);
+        radial-gradient(circle at 90% 10%,#00000009 0,transparent 34%),
+        linear-gradient(120deg,#f1f1ef,#e9e9e6 75%,#e2e2df);
 }
 
 .learning-hero small{
-    color:var(--accent-dark);
+    color:#292929;
     font-size:10px;
     font-weight:700;
     letter-spacing:2px;
@@ -1497,7 +1497,7 @@ select:focus-visible{
 
 .learning-card:hover{
     transform:translateY(-4px);
-    border-color:#a9c0ab;
+    border-color:#bcbcb7;
     box-shadow:0 12px 28px #283a3014;
 }
 
@@ -1507,10 +1507,10 @@ select:focus-visible{
     height:42px;
     margin-bottom:18px;
     place-items:center;
-    border:1px solid #d5e0d4;
+    border:1px solid #deded9;
     border-radius:14px;
-    color:var(--accent-dark);
-    background:var(--accent-soft);
+    color:#282828;
+    background:#efefed;
     font-size:20px;
 }
 
