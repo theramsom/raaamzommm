@@ -48,7 +48,12 @@ La plataforma combina una interfaz amigable con funcionalidades de organización
 - Resolver dudas educativas mediante consultas en lenguaje natural.
 - Brindar apoyo para conceptos, procedimientos y explicaciones académicas.
 
-### 6. Guardado y copias de seguridad
+### 6. Sección de aprendizaje
+
+- Consultar estrategias para organizar el estudio, recordar activamente y repasar de forma gradual.
+- Acceder directamente al asistente de IA desde las recomendaciones.
+
+### 7. Guardado y copias de seguridad
 
 - Las tareas, horas, actividad, pizarra y perfiles personales se guardan en el navegador.
 - Las clases se guardan en el backend: en un archivo local durante las pruebas o en Supabase cuando se configura el modo en la nube.
@@ -61,6 +66,7 @@ un lugar privado. La copia no sincroniza tareas ni perfiles entre dispositivos.
 
 - Landing page moderna y visualmente limpia.
 - Navegación por secciones dentro de la aplicación.
+- Tema oscuro con acentos verdes y transiciones suaves.
 - Interfaz responsiva y centrada en la experiencia del usuario.
 - Panel administrativo con opciones de gestión académica.
 - Backend con Express para integración con IA.

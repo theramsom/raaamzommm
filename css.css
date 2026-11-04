@@ -1193,16 +1193,6 @@ select:focus-visible{
 }
 
 #app{
-    --black:#e7eee8;
-    --dark:#e2ebe4;
-    --gray:#a6b4a9;
-    --light:#17221b;
-    --border:#39493e;
-    --white:#202d25;
-    --accent:#82a58a;
-    --accent-dark:#52785d;
-    --accent-soft:#2a3c30;
-    --danger:#e18b91;
     background:var(--light);
     color:var(--black);
 }
@@ -1279,8 +1269,8 @@ select:focus-visible{
     overflow:hidden;
     border:0;
     background:
-        radial-gradient(circle at 88% 8%,#73957a36 0,transparent 35%),
-        linear-gradient(120deg,#263b30,#304b3b 72%,#395944);
+        radial-gradient(circle at 88% 8%,#73957a24 0,transparent 35%),
+        linear-gradient(120deg,#17271d,#203629 72%,#294532);
     box-shadow:0 12px 28px #263b301a;
 }
 
@@ -1463,136 +1453,19 @@ select:focus-visible{
     box-shadow:0 8px 24px #17231c30;
 }
 
-.cover h1{
-    color:#1d2b25;
-}
-
-.browser button{
-    color:#1d2b25;
-}
-
-#app .card:not(.welcome),
-#app .task,
-#app .user-type,
-#app .account,
-#app .institution-list,
-#app .institution-feedback,
-#app .secondary,
-#app .filter,
-#app .tool,
-#app .chart-nav button,
-#app .form input,
-#app .form select{
-    color:var(--black);
-    background:#202d25;
-    border-color:var(--border);
-}
-
-#app .board{
-    color:var(--black);
-    background:#202d25;
-    border-color:var(--border);
-}
-
-#app .tools{
-    background:#202d25ed;
-    border-color:var(--border);
-}
-
-#app .nav.active{
-    background:#304538;
-    color:#dce9df;
-}
-
-#app .nav-title,
-#app .stat label,
-#app .muted,
-#app .task-meta,
-#app .form label,
-#app .user-type p,
-#app .institution-list ul,
-#app .class-item span,
-#app .coming p,
-#app .chart-week-label,
-#app .top p{
-    color:var(--gray);
-}
-
-#app .task.done .task-name{
-    color:#89988d;
-}
-
-#app .secondary:hover,
-#app .filter:hover,
-#app .tool:hover,
-#app .user-type:hover,
-#app .account:hover{
-    background:#2b3b30;
-    border-color:#607765;
-}
-
-#app .filter.active,
-#app .tool.active{
-    color:#f4f8f4;
-    background:#52785d;
-    border-color:#52785d;
-}
-
-#app .filter.active:hover,
-#app .tool.active:hover{
-    background:#5c8568;
-}
-
-#app .user-type.selected,
-#app .account.selected{
-    background:#293d30;
-    border-color:#82a58a;
-}
-
-#app .institution-feedback{
-    color:#d3ded5;
-}
-
-#app .form input::placeholder{
-    color:#8d9b91;
-}
-
-#app .progress{
-    background:#334138;
-}
-
-#app .danger{
-    color:#ffc2c4;
-    background:#392629;
-    border-color:#704449;
-}
-
-#app .danger:hover{
-    background:#4a2d31;
-}
-
-#app .modal{
-    color:var(--black);
-    background:#202d25;
-}
-
-#app .toast{
-    background:#101812;
-}
-
 .learning-hero{
     position:relative;
     overflow:hidden;
     padding:clamp(25px,4vw,42px);
-    border:1px solid #52785d66;
+    border:1px solid #d5e0d4;
     border-radius:20px;
     background:
-        radial-gradient(circle at 90% 10%,#82a58a2b 0,transparent 34%),
-        linear-gradient(120deg,#22372a,#1d3024 75%,#263d2c);
+        radial-gradient(circle at 90% 10%,#82a58a24 0,transparent 34%),
+        linear-gradient(120deg,#edf3ec,#e3ede3 75%,#dce8dd);
 }
 
 .learning-hero small{
-    color:#aecab3;
+    color:var(--accent-dark);
     font-size:10px;
     font-weight:700;
     letter-spacing:2px;
@@ -1601,7 +1474,7 @@ select:focus-visible{
 .learning-hero h2{
     max-width:650px;
     margin:13px 0 8px;
-    color:#edf4ee;
+    color:var(--dark);
     font-family:Georgia,"Times New Roman",serif;
     font-size:clamp(26px,4vw,40px);
     line-height:1.15;
@@ -1609,7 +1482,7 @@ select:focus-visible{
 
 .learning-hero p{
     max-width:600px;
-    color:#bdcbbf;
+    color:var(--gray);
     font-size:13px;
 }
 
@@ -1624,8 +1497,8 @@ select:focus-visible{
 
 .learning-card:hover{
     transform:translateY(-4px);
-    border-color:#607765;
-    box-shadow:0 12px 28px #08100b45;
+    border-color:#a9c0ab;
+    box-shadow:0 12px 28px #283a3014;
 }
 
 .learning-icon{
@@ -1634,23 +1507,23 @@ select:focus-visible{
     height:42px;
     margin-bottom:18px;
     place-items:center;
-    border:1px solid #52785d66;
+    border:1px solid #d5e0d4;
     border-radius:14px;
-    color:#b5d0ba;
-    background:#2a3c30;
+    color:var(--accent-dark);
+    background:var(--accent-soft);
     font-size:20px;
 }
 
 .learning-card h3,
 .learning-help h3{
     margin-bottom:8px;
-    color:#e7eee8;
+    color:var(--dark);
     font-size:16px;
 }
 
 .learning-card p,
 .learning-help p{
-    color:#a6b4a9;
+    color:var(--gray);
     font-size:12px;
     line-height:1.7;
 }
@@ -1664,7 +1537,7 @@ select:focus-visible{
     padding:20px 22px;
     border:1px solid var(--border);
     border-radius:17px;
-    background:#202d25;
+    background:#fff;
 }
 
 #landing::before{
