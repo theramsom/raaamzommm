@@ -1136,14 +1136,14 @@ select:focus-visible{
 .cover{
     position:relative;
     z-index:1;
-    width:min(920px,100%);
-    padding:clamp(48px,8vw,82px) clamp(28px,7vw,80px);
+    width:min(760px,100%);
+    padding:clamp(48px,8vw,82px) 28px;
     border:1px solid #e7e5dc;
     border-radius:30px;
     background:#ffffffd9;
     box-shadow:0 24px 70px #34443712;
     backdrop-filter:blur(8px);
-    text-align:left;
+    text-align:center;
 }
 
 .cover small{
@@ -1181,60 +1181,9 @@ select:focus-visible{
 }
 
 .enter{
-    display:flex;
-    align-items:center;
-    gap:20px;
-    margin-top:34px;
-    padding:0;
-    color:var(--dark);
-    background:transparent;
-    box-shadow:none;
-    text-align:left;
-}
-
-.cover .enter:hover{
-    color:var(--accent-dark);
-    background:transparent;
-    box-shadow:none;
-    transform:translateY(-2px);
-}
-
-.enter-icon{
-    display:grid;
-    width:76px;
-    height:76px;
-    flex:0 0 76px;
-    place-items:center;
-    border:1px solid #3f6653;
-    border-radius:50%;
-    color:#f8f7f2;
-    background:#3f6653;
-    box-shadow:0 10px 24px #3f665333;
-    font-size:27px;
-    font-weight:400;
-    transition:background-color .2s ease,box-shadow .2s ease,transform .2s ease;
-}
-
-.enter:hover .enter-icon{
-    background:#345641;
-    box-shadow:0 12px 28px #3f66534a;
-    transform:scale(1.05);
-}
-
-.enter-copy{
-    display:grid;
-    gap:3px;
-}
-
-.enter-copy strong{
-    color:var(--dark);
-    font-size:18px;
-}
-
-.enter-copy span{
-    color:#68766e;
-    font-size:13px;
-    font-weight:400;
+    margin-top:32px;
+    padding:15px 34px;
+    font-size:12px;
 }
 
 .enter:hover,
@@ -1504,6 +1453,10 @@ select:focus-visible{
 }
 
 @media(max-width:700px){
+    #landing{
+        height:auto;
+    }
+
     .main{
         padding:20px 15px;
     }
@@ -1522,25 +1475,9 @@ select:focus-visible{
     }
 
     .cover p{
-        max-width:360px;
+        max-width:300px;
+        margin:0 auto;
         line-height:1.7;
-    }
-
-    .enter{
-        gap:15px;
-        margin-top:28px;
-    }
-
-    .enter-icon{
-        width:64px;
-        height:64px;
-        flex-basis:64px;
-        font-size:23px;
-    }
-
-    .enter-copy span{
-        max-width:200px;
-        line-height:1.5;
     }
 
     .welcome{
