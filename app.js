@@ -693,6 +693,11 @@ function showPage(
             "Tareas que todavía debes completar."
         ],
 
+        learning:[
+            "Aprendizaje",
+            "Ideas y estrategias para aprender mejor."
+        ],
+
         board:[
             "Pizarra",
             "Escribe y dibuja tus ideas."
