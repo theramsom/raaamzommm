@@ -1678,6 +1678,21 @@ function setupCanvas(){
         stopDraw
     );
 
+    document.addEventListener(
+        "pointerdown",
+        event => {
+
+            if(
+                isBoardTextEditing() &&
+                event.target !== document.getElementById("boardTextEditor")
+            ){
+                commitBoardText();
+            }
+
+        },
+        true
+    );
+
     window.addEventListener(
         "resize",
         () => {
@@ -2037,7 +2052,6 @@ function openBoardTextEditor(event){
         document.getElementById("color").value;
     editor.style.height = `${fontSize * 1.5}px`;
     editor.classList.remove("hidden");
-    editor.focus();
 
     editor.oninput = () => {
         editor.style.height = "auto";
@@ -2045,14 +2059,17 @@ function openBoardTextEditor(event){
             `${Math.max(fontSize * 1.5, editor.scrollHeight)}px`;
     };
 
-    editor.onblur = commitBoardText;
-
     editor.onkeydown = keyEvent => {
         if(keyEvent.key === "Escape"){
             keyEvent.preventDefault();
             cancelBoardText();
         }
     };
+
+    setTimeout(
+        () => editor.focus(),
+        0
+    );
 
 }
 
