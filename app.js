@@ -593,6 +593,44 @@ function enterApp(){
 
 }
 
+function openAccountPage(mode){
+
+    enterApp();
+
+    showPage("profile");
+
+    if(mode === "register"){
+
+        document.getElementById(
+            "nameInput"
+        ).focus();
+
+        return;
+
+    }
+
+    const accountsList =
+        document.getElementById("accounts");
+
+    accountsList.scrollIntoView({
+        behavior:"smooth",
+        block:"center"
+    });
+
+    const firstAccountButton =
+        accountsList.querySelector("button");
+
+    if(firstAccountButton){
+        firstAccountButton.focus();
+    }
+    else{
+        document.getElementById(
+            "nameInput"
+        ).focus();
+    }
+
+}
+
 
 /* =========================
    NAVEGACIÓN

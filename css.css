@@ -1099,10 +1099,7 @@ select:focus-visible{
 }
 
 #landing::before{
-    width:390px;
-    height:390px;
-    top:-210px;
-    right:-100px;
+    display:none;
 }
 
 #landing::after{
@@ -1133,17 +1130,55 @@ select:focus-visible{
     color:#fff;
 }
 
+.landing-actions{
+    position:absolute;
+    top:26px;
+    right:26px;
+    z-index:2;
+    display:flex;
+    align-items:center;
+    gap:10px;
+}
+
+.landing-action{
+    padding:12px 17px;
+    border:1px solid var(--dark);
+    border-radius:30px;
+    font-size:12px;
+    font-weight:700;
+    transition:.2s;
+}
+
+.landing-action:hover{
+    transform:translateY(-2px);
+}
+
+.landing-action-secondary{
+    color:var(--dark);
+    background:#ffffffc9;
+}
+
+.landing-action-primary{
+    color:#fff;
+    background:var(--dark);
+}
+
+.landing-action-primary:hover{
+    background:#303030;
+}
+
 .cover{
     position:relative;
     z-index:1;
-    width:min(760px,100%);
+    width:min(760px,58vw);
+    margin-right:auto;
     padding:clamp(48px,8vw,82px) 28px;
     border:1px solid #e7e5dc;
     border-radius:30px;
     background:#ffffffd9;
     box-shadow:0 24px 70px #34443712;
     backdrop-filter:blur(8px);
-    text-align:center;
+    text-align:left;
 }
 
 .cover small{
@@ -1181,6 +1216,8 @@ select:focus-visible{
 }
 
 .enter{
+    display:block;
+    margin-left:auto;
     margin-top:32px;
     padding:15px 34px;
     font-size:12px;
@@ -1577,8 +1614,21 @@ select:focus-visible{
     }
 
     .cover{
+        width:100%;
+        margin:0;
         padding:50px 20px;
         border-radius:24px;
+    }
+
+    .landing-actions{
+        top:16px;
+        right:16px;
+        gap:6px;
+    }
+
+    .landing-action{
+        padding:10px 12px;
+        font-size:11px;
     }
 
     .cover h1{
@@ -1587,7 +1637,7 @@ select:focus-visible{
 
     .cover p{
         max-width:300px;
-        margin:0 auto;
+        margin:0;
         line-height:1.7;
     }
 
