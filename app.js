@@ -84,34 +84,6 @@ let studyClasses =
         []
     );
 
-// Beta institution allowlist: replace these two sample domains with confirmed institutions.
-const INSTITUTIONS = [
-    {
-        domain:"innovaschools.edu.pe",
-        name:"Innova Schools"
-    },
-    {
-        domain:"trilce.edu.pe",
-        name:"Trilce Perú"
-    }
-];
-
-const INSTITUTION_ROOMS = [
-    "SM2 - Aula A",
-    "SM2 - Aula B",
-    "SM2 - Aula C",
-    "SM2 - Aula D"
-];
-
-const INSTITUTION_COURSES = [
-    "Matemática",
-    "Comunicación",
-    "Ciencia",
-    "Historia",
-    "Inglés"
-];
-
-
 /* =========================
    LOCAL STORAGE
 ========================= */
@@ -2830,9 +2802,11 @@ function logout(){
 
 function selectRole(role){
 
-    selectedRole = role;
+    if(role !== "teacher" && role !== "student"){
+        return;
+    }
 
-    clearInstitutionDetection();
+    selectedRole = role;
 
     document
         .querySelectorAll(".user-type")
@@ -2849,30 +2823,11 @@ function selectRole(role){
         .getElementById("userForm")
         .classList.add("open");
 
-    const academicRole =
-        role === "teacher" ||
-        role === "student";
+    document.getElementById("studentFields").style.display =
+        role === "student" ? "block" : "none";
 
-    document.getElementById(
-        "institutionForm"
-    ).style.display =
-        academicRole
-        ? "block"
-        : "none";
-
-    document.getElementById(
-        "userEmailLabel"
-    ).textContent =
-        academicRole
-        ? "Correo institucional"
-        : "Correo electrónico";
-
-    document.getElementById(
-        "userEmail"
-    ).placeholder =
-        academicRole
-        ? "tu@institucion.edu.pe"
-        : "tu@correo.com";
+    document.getElementById("teacherFields").style.display =
+        role === "teacher" ? "block" : "none";
 
     const savedUser =
         studyUsers.find(
@@ -2891,224 +2846,49 @@ function selectRole(role){
         ).value =
             savedUser.email;
 
-        if(
-            academicRole &&
-            savedUser.institutionChecked
-        ){
+        document.getElementById("userInstitution").value =
+            savedUser.institution || savedUser.institutionName || "";
 
-            document.getElementById(
-                "userEmail"
-            ).dataset.institutionChecked =
-                "true";
+        document.getElementById("userCampus").value =
+            savedUser.campus || "";
 
-            document.getElementById(
-                "userEmail"
-            ).dataset.institutionEmail =
-                savedUser.email;
+        document.getElementById("userGrade").value =
+            savedUser.grade || "";
 
-            document.getElementById(
-                "userEmail"
-            ).dataset.institutionDomain =
-                savedUser.institutionDomain || "";
+        document.getElementById("userSection").value =
+            savedUser.section || "";
 
-            document.getElementById(
-                "userEmail"
-            ).dataset.institutionName =
-                savedUser.institutionName || "";
+        const teachingGrades =
+            Array.isArray(savedUser.teachingGrades)
+                ? savedUser.teachingGrades
+                : [];
 
-            renderInstitutionPanel(savedUser);
-
-        }
+        document
+            .querySelectorAll('input[name="teacherGrades"]')
+            .forEach(
+                input => {
+                    input.checked =
+                        teachingGrades.includes(input.value);
+                }
+            );
 
     }
     else{
 
-        document.getElementById(
-            "userName"
-        ).value = "";
+        document.getElementById("userName").value = "";
+        document.getElementById("userEmail").value = "";
+        document.getElementById("userInstitution").value = "";
+        document.getElementById("userCampus").value = "";
+        document.getElementById("userGrade").value = "";
+        document.getElementById("userSection").value = "";
 
-        document.getElementById(
-            "userEmail"
-        ).value = "";
-
-    }
-
-    if(
-        !savedUser ||
-        !savedUser.institutionChecked ||
-        !academicRole
-    ){
-        renderInstitutionPanel();
-    }
-
-}
-
-
-function clearInstitutionDetection(){
-
-    const emailInput =
-        document.getElementById("userEmail");
-
-    if(!emailInput){
-        return;
-    }
-
-    delete emailInput.dataset.institutionChecked;
-    delete emailInput.dataset.institutionEmail;
-    delete emailInput.dataset.institutionDomain;
-    delete emailInput.dataset.institutionName;
-
-    renderInstitutionPanel();
-
-}
-
-
-function detectInstitution(){
-
-    const email =
         document
-            .getElementById("userEmail")
-            .value
-            .trim()
-            .toLowerCase();
-
-    const emailParts =
-        email.split("@");
-
-    if(
-        emailParts.length !== 2 ||
-        !emailParts[1]
-    ){
-
-        toast(
-            "Escribe un correo institucional válido."
-        );
-
-        return;
+            .querySelectorAll('input[name="teacherGrades"]')
+            .forEach(input => {
+                input.checked = false;
+            });
 
     }
-
-    const domain =
-        emailParts[1];
-
-    const institution =
-        INSTITUTIONS.find(
-            item =>
-                domain === item.domain ||
-                domain.endsWith("." + item.domain)
-        );
-
-    const emailInput =
-        document.getElementById("userEmail");
-
-    emailInput.dataset.institutionChecked =
-        "true";
-
-    emailInput.dataset.institutionEmail =
-        email;
-
-    emailInput.dataset.institutionDomain =
-        domain;
-
-    emailInput.dataset.institutionName =
-        institution
-        ? institution.name
-        : "";
-
-    renderInstitutionPanel({
-        role:selectedRole,
-        institutionChecked:true,
-        institutionDomain:domain,
-        institutionName:institution
-            ? institution.name
-            : ""
-    });
-
-}
-
-
-function renderInstitutionPanel(user = null){
-
-    const panel =
-        document.getElementById(
-            "institutionPanel"
-        );
-
-    const role =
-        user
-        ? user.role
-        : selectedRole;
-
-    const academicRole =
-        role === "teacher" ||
-        role === "student";
-
-    const emailInput =
-        document.getElementById("userEmail");
-
-    const checked =
-        user
-        ? user.institutionChecked === true
-        : emailInput.dataset.institutionChecked === "true" &&
-            emailInput.dataset.institutionEmail ===
-            emailInput.value.trim().toLowerCase();
-
-    if(!academicRole || !checked){
-
-        panel.style.display = "none";
-        panel.innerHTML = "";
-
-        return;
-
-    }
-
-    const institutionName =
-        user
-        ? user.institutionName
-        : emailInput.dataset.institutionName;
-
-    panel.style.display = "block";
-
-    if(!institutionName){
-
-        panel.innerHTML = `
-            <h3>Institución educativa</h3>
-            <div class="institution-feedback">
-                Esta institución todavía no está disponible en la beta.
-            </div>
-        `;
-
-        return;
-
-    }
-
-    const rooms =
-        INSTITUTION_ROOMS.map(
-            room => `<li>${escapeHTML(room)}</li>`
-        ).join("");
-
-    const courses =
-        INSTITUTION_COURSES.map(
-            course => `<li>${escapeHTML(course)}</li>`
-        ).join("");
-
-    panel.innerHTML = `
-        <h3>Institución educativa</h3>
-        <p class="muted">
-            Institución detectada:
-            <strong>${escapeHTML(institutionName)}</strong>
-        </p>
-        <div class="institution-grid">
-            <div class="institution-list">
-                <strong>Salones</strong>
-                <ul>${rooms}</ul>
-            </div>
-            <div class="institution-list">
-                <strong>Cursos</strong>
-                <ul>${courses}</ul>
-            </div>
-        </div>
-    `;
 
 }
 
@@ -3138,19 +2918,71 @@ function saveStudyUser(){
             .trim()
             .toLowerCase();
 
+    const institution =
+        document
+            .getElementById("userInstitution")
+            .value
+            .trim();
+
+    const campus =
+        document
+            .getElementById("userCampus")
+            .value
+            .trim();
+
+    const emailInput =
+        document.getElementById("userEmail");
+
     if(
         !name ||
         !email ||
-        !email.includes("@") ||
-        !email.includes(".")
+        !emailInput.checkValidity() ||
+        !institution ||
+        !campus
     ){
 
         toast(
-            "Escribe un nombre y correo válido."
+            "Completa tu nombre, correo válido, institución y sede."
         );
 
         return;
 
+    }
+
+    const grade =
+        selectedRole === "student"
+            ? document.getElementById("userGrade").value
+            : "";
+
+    const section =
+        selectedRole === "student"
+            ? document.getElementById("userSection").value.trim()
+            : "";
+
+    const teachingGrades =
+        selectedRole === "teacher"
+            ? Array.from(
+                document.querySelectorAll(
+                    'input[name="teacherGrades"]:checked'
+                ),
+                input => input.value
+            )
+            : [];
+
+    if(
+        selectedRole === "student" &&
+        (!grade || !section)
+    ){
+        toast("Completa el grado y la sección.");
+        return;
+    }
+
+    if(
+        selectedRole === "teacher" &&
+        !teachingGrades.length
+    ){
+        toast("Selecciona al menos un grado que enseñas.");
+        return;
     }
 
     let user =
@@ -3159,65 +2991,38 @@ function saveStudyUser(){
                 item.email === email
         );
 
-    const emailInput =
-        document.getElementById("userEmail");
-
-    const institutionChecked =
-        selectedRole !== "personal" &&
-        emailInput.dataset.institutionChecked === "true" &&
-        emailInput.dataset.institutionEmail === email;
-
-    const institutionName =
-        institutionChecked
-        ? emailInput.dataset.institutionName || ""
-        : "";
-
-    const institutionDomain =
-        institutionChecked
-        ? emailInput.dataset.institutionDomain || ""
-        : "";
-
     if(user){
-
-        user.name =
-            name;
-
-        user.role =
-            selectedRole;
-
-        user.institutionChecked =
-            institutionChecked;
-
-        user.institutionName =
-            institutionName;
-
-        user.institutionDomain =
-            institutionDomain;
-
+        Object.assign(user, {
+            name,
+            email,
+            role:selectedRole,
+            institution,
+            campus,
+            grade,
+            section,
+            teachingGrades
+        });
     }
     else{
 
         user = {
-
             id:Date.now(),
-
-            name:name,
-
-            email:email,
-
+            name,
+            email,
             role:selectedRole,
-
-            institutionChecked:institutionChecked,
-
-            institutionName:institutionName,
-
-            institutionDomain:institutionDomain
-
+            institution,
+            campus,
+            grade,
+            section,
+            teachingGrades
         };
 
         studyUsers.push(user);
 
     }
+
+    delete user.institutionName;
+    delete user.institutionDomain;
 
     writeJSON(
         "studyUsers",
@@ -3238,16 +3043,11 @@ function saveStudyUser(){
 function roleName(role){
 
     const names = {
-
         teacher:"Profesor",
-
-        student:"Estudiante",
-
-        personal:"Usuario personal"
-
+        student:"Estudiante"
     };
 
-    return names[role] || role;
+    return names[role] || "Perfil existente";
 
 }
 
@@ -3266,30 +3066,19 @@ function renderStudyUser(){
 
         result.classList.remove("open");
 
-        document.getElementById(
-            "teacherPanel"
-        ).style.display = "none";
-
-        document.getElementById(
-            "studentPanel"
-        ).style.display = "none";
-
-        document.getElementById(
-            "personalPanel"
-        ).style.display = "none";
-
-        document.getElementById(
-            "institutionForm"
-        ).style.display =
-            selectedRole === "teacher" ||
-            selectedRole === "student"
-            ? "block"
-            : "none";
-
-        renderInstitutionPanel();
+        document.getElementById("teacherPanel").style.display = "none";
+        document.getElementById("studentPanel").style.display = "none";
 
         return;
 
+    }
+
+    if(user.role !== "teacher" && user.role !== "student"){
+        result.classList.remove("open");
+        document.getElementById("userForm").classList.remove("open");
+        document.getElementById("teacherPanel").style.display = "none";
+        document.getElementById("studentPanel").style.display = "none";
+        return;
     }
 
     selectedRole =
@@ -3315,65 +3104,47 @@ function renderStudyUser(){
         "userForm"
     ).classList.add("open");
 
-    document.getElementById(
-        "userName"
-    ).value =
-        user.name;
+    document.getElementById("studentFields").style.display =
+        user.role === "student" ? "block" : "none";
 
-    document.getElementById(
-        "userEmail"
-    ).value =
-        user.email;
+    document.getElementById("teacherFields").style.display =
+        user.role === "teacher" ? "block" : "none";
 
-    document.getElementById(
-        "institutionForm"
-    ).style.display =
-        user.role === "teacher" ||
-        user.role === "student"
-        ? "block"
-        : "none";
+    document.getElementById("userName").value =
+        user.name || "";
 
-    document.getElementById(
-        "userEmailLabel"
-    ).textContent =
-        user.role === "teacher" ||
-        user.role === "student"
-        ? "Correo institucional"
-        : "Correo electrónico";
+    document.getElementById("userEmail").value =
+        user.email || "";
 
-    const emailInput =
-        document.getElementById("userEmail");
+    document.getElementById("userInstitution").value =
+        user.institution || user.institutionName || "";
 
-    if(user.institutionChecked){
+    document.getElementById("userCampus").value =
+        user.campus || "";
 
-        emailInput.dataset.institutionChecked =
-            "true";
+    document.getElementById("userGrade").value =
+        user.grade || "";
 
-        emailInput.dataset.institutionEmail =
-            user.email;
+    document.getElementById("userSection").value =
+        user.section || "";
 
-        emailInput.dataset.institutionDomain =
-            user.institutionDomain || "";
+    const teachingGrades =
+        Array.isArray(user.teachingGrades)
+            ? user.teachingGrades
+            : [];
 
-        emailInput.dataset.institutionName =
-            user.institutionName || "";
-
-    }
-    else{
-
-        delete emailInput.dataset.institutionChecked;
-        delete emailInput.dataset.institutionEmail;
-        delete emailInput.dataset.institutionDomain;
-        delete emailInput.dataset.institutionName;
-
-    }
-
-    renderInstitutionPanel(user);
+    document
+        .querySelectorAll('input[name="teacherGrades"]')
+        .forEach(
+            input => {
+                input.checked =
+                    teachingGrades.includes(input.value);
+            }
+        );
 
     result.classList.add("open");
 
     result.innerHTML = `
-
         <div
             style="
             display:flex;
@@ -3383,7 +3154,6 @@ function renderStudyUser(){
             flex-wrap:wrap;">
 
             <div>
-
                 <strong style="font-size:15px">
                     ${escapeHTML(user.name)}
                 </strong>
@@ -3391,17 +3161,24 @@ function renderStudyUser(){
                 <p
                     class="muted"
                     style="margin-top:5px">
-                    ${escapeHTML(user.email)}
+                    ${escapeHTML(user.email)}<br>
+                    ${escapeHTML(user.institution || user.institutionName || "")} ·
+                    ${escapeHTML(user.campus || "")}
                 </p>
-
             </div>
 
             <span class="role-badge">
                 ${roleName(user.role)}
             </span>
-
         </div>
 
+        <p class="muted" style="margin-top:10px">
+            ${
+                user.role === "student"
+                    ? `${escapeHTML(user.grade || "")} · Sección ${escapeHTML(user.section || "")}`
+                    : `Grados que enseña: ${teachingGrades.map(escapeHTML).join(", ")}`
+            }
+        </p>
     `;
 
     document.getElementById(
@@ -3415,13 +3192,6 @@ function renderStudyUser(){
         "studentPanel"
     ).style.display =
         user.role === "student"
-        ? "block"
-        : "none";
-
-    document.getElementById(
-        "personalPanel"
-    ).style.display =
-        user.role === "personal"
         ? "block"
         : "none";
 

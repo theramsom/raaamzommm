@@ -469,16 +469,17 @@
 
             <div class="card">
 
-                <h2>Elige tu modalidad de uso</h2>
+                <h2>Sistema de usuarios</h2>
 
                 <p class="muted" style="margin-top:7px">
-                    Selecciona el perfil que mejor se adapta a ti.
+                    Registra tus datos como profesor o estudiante.
                 </p>
 
 
                 <div class="user-choice">
 
                     <button
+                        type="button"
                         class="user-type"
                         id="role-teacher"
                         onclick="selectRole('teacher')">
@@ -492,13 +493,14 @@
                         </h3>
 
                         <p>
-                            Crea y administra tus clases para organizar a tus estudiantes.
+                            Registra tus datos y los grados que enseñas.
                         </p>
 
                     </button>
 
 
                     <button
+                        type="button"
                         class="user-type"
                         id="role-student"
                         onclick="selectRole('student')">
@@ -512,27 +514,7 @@
                         </h3>
 
                         <p>
-                            Únete a tus clases y utiliza las herramientas de Study Hub.
-                        </p>
-
-                    </button>
-
-
-                    <button
-                        class="user-type"
-                        id="role-personal"
-                        onclick="selectRole('personal')">
-
-                        <div class="user-icon">
-                            👤
-                        </div>
-
-                        <h3>
-                            Usuario personal
-                        </h3>
-
-                        <p>
-                            Utiliza Study Hub para organizar tus propias tareas y estudiar.
+                            Registra tus datos escolares y utiliza Study Hub.
                         </p>
 
                     </button>
@@ -542,60 +524,83 @@
 
                 <div class="user-form" id="userForm">
 
-                    <div class="form">
+                    <div class="user-fields">
+                        <div class="form">
+                            <label for="userName">Nombre completo</label>
+                            <input
+                                id="userName"
+                                autocomplete="name"
+                                placeholder="Escribe tu nombre completo"
+                                required>
+                        </div>
 
-                        <label>
-                            Nombre
-                        </label>
+                        <div class="form">
+                            <label for="userEmail">Correo electrónico</label>
+                            <input
+                                id="userEmail"
+                                type="email"
+                                autocomplete="email"
+                                placeholder="tu@correo.com"
+                                required>
+                        </div>
 
-                        <input
-                            id="userName"
-                            placeholder="Escribe tu nombre">
+                        <div class="form">
+                            <label for="userInstitution">Institución educativa</label>
+                            <input
+                                id="userInstitution"
+                                placeholder="Nombre de tu institución"
+                                required>
+                        </div>
 
+                        <div class="form">
+                            <label for="userCampus">Sede o local educativo</label>
+                            <input
+                                id="userCampus"
+                                placeholder="Ej. San Miguel 2"
+                                required>
+                        </div>
                     </div>
 
+                    <div class="role-fields" id="studentFields" style="display:none">
+                        <div class="user-fields">
+                            <div class="form">
+                                <label for="userGrade">Grado</label>
+                                <select id="userGrade">
+                                    <option value="">Selecciona un grado</option>
+                                    <option>1.º de secundaria</option>
+                                    <option>2.º de secundaria</option>
+                                    <option>3.º de secundaria</option>
+                                    <option>4.º de secundaria</option>
+                                    <option>5.º de secundaria</option>
+                                </select>
+                            </div>
 
-                    <div class="form">
-
-                        <label id="userEmailLabel">
-                            Correo electrónico
-                        </label>
-
-                        <input
-                            id="userEmail"
-                            type="email"
-                            placeholder="tu@correo.com"
-                            oninput="clearInstitutionDetection()">
-
+                            <div class="form">
+                                <label for="userSection">Sección</label>
+                                <input
+                                    id="userSection"
+                                    placeholder="Ej. A">
+                            </div>
+                        </div>
                     </div>
 
-                    <!-- Sección de instituciones educativas: visible solo para profesor y estudiante. -->
-                    <div
-                        id="institutionForm"
-                        class="institution-feedback"
-                        style="display:none;margin:15px 0;">
-
-                        <h3 style="font-size:13px;margin-bottom:5px">
-                            Institución educativa
-                        </h3>
-
-                        <p style="margin-bottom:10px">
-                            Detecta la institución a partir del dominio de tu correo institucional.
-                        </p>
-
-                        <button
-                            class="secondary"
-                            type="button"
-                            onclick="detectInstitution()">
-                            Detectar institución
-                        </button>
-
+                    <div class="role-fields teacher-grade-section" id="teacherFields" style="display:none">
+                        <h3>Grados que enseña</h3>
+                        <p class="muted">Puedes seleccionar uno o varios grados.</p>
+                        <div class="teacher-grade-options">
+                            <label><input type="checkbox" name="teacherGrades" value="1.º de secundaria"> 1.º de secundaria</label>
+                            <label><input type="checkbox" name="teacherGrades" value="2.º de secundaria"> 2.º de secundaria</label>
+                            <label><input type="checkbox" name="teacherGrades" value="3.º de secundaria"> 3.º de secundaria</label>
+                            <label><input type="checkbox" name="teacherGrades" value="4.º de secundaria"> 4.º de secundaria</label>
+                            <label><input type="checkbox" name="teacherGrades" value="5.º de secundaria"> 5.º de secundaria</label>
+                        </div>
                     </div>
 
                     <button
+                        type="button"
                         class="primary"
                         onclick="saveStudyUser()">
-                        Continuar →
+                        Guardar datos
                     </button>
 
                 </div>
@@ -603,13 +608,6 @@
 
                 <div class="user-result" id="userResult"></div>
 
-            </div>
-
-            <!-- Sección de instituciones educativas y oferta beta. -->
-            <div
-                class="card institution-panel"
-                id="institutionPanel"
-                style="display:none;">
             </div>
 
             <!-- PROFESOR -->
@@ -680,34 +678,6 @@
                 </div>
 
             </div>
-
-
-            <!-- PERSONAL -->
-
-            <div
-                class="card"
-                id="personalPanel"
-                style="display:none;margin-top:15px;">
-
-                <h3>
-                    Tu espacio personal
-                </h3>
-
-                <p
-                    class="muted"
-                    style="margin-top:8px">
-                    Puedes utilizar el organizador, la pizarra, el rendimiento y las demás herramientas de Study Hub para estudiar por tu cuenta.
-                </p>
-
-                <button
-                    class="primary"
-                    style="margin-top:18px"
-                    onclick="showPage('organizer')">
-                    Ir al organizador →
-                </button>
-
-            </div>
-
         </section>
 
 
