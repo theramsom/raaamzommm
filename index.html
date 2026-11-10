@@ -27,12 +27,12 @@
         <button
             class="landing-action landing-action-secondary"
             onclick="openAccountPage('register')">
-            Regístrate
+            Registrarse
         </button>
         <button
             class="landing-action landing-action-primary"
             onclick="openAccountPage('login')">
-            Inicia sesión
+            Iniciar sesión
         </button>
     </nav>
 
@@ -45,11 +45,135 @@
             Organiza tus tareas. Aprende mejor. Avanza cada día.
         </p>
 
-        <button class="enter" onclick="enterApp()" aria-label="Practicar ahora en Study Hub">
-            Practicar ahora →
+        <button class="enter" onclick="enterApp()" aria-label="Ingresar a Study Hub">
+            Ingresar →
         </button>
+
     </div>
 
+</section>
+
+<section id="access" class="access-screen" aria-label="Acceso a Study Hub" hidden>
+    <div class="access-card">
+        <button class="access-back" type="button" onclick="showLanding()">
+            ← Volver al inicio
+        </button>
+
+        <small>STUDY PLATFORM</small>
+        <h1 id="accessTitle">Crear cuenta</h1>
+        <p id="accessDescription" class="muted">
+            Regístrate para empezar a usar Study Hub.
+        </p>
+
+        <div class="access-tabs" role="tablist" aria-label="Acceso">
+            <button
+                type="button"
+                id="registerTab"
+                role="tab"
+                aria-controls="registerForm"
+                onclick="showAccessMode('register')">
+                Registrarse
+            </button>
+            <button
+                type="button"
+                id="loginTab"
+                role="tab"
+                aria-controls="loginForm"
+                onclick="showAccessMode('login')">
+                Iniciar sesión
+            </button>
+        </div>
+
+        <form id="registerForm" onsubmit="registerAccount(event)">
+            <div class="form">
+                <label for="registerName">Nombre completo</label>
+                <input id="registerName" name="name" autocomplete="name" required>
+            </div>
+            <div class="form">
+                <label for="registerEmail">Correo electrónico</label>
+                <input id="registerEmail" name="email" type="email" autocomplete="email" required>
+            </div>
+            <div class="form">
+                <label for="registerPassword">Contraseña (mínimo 8 caracteres)</label>
+                <div class="password-input-wrap">
+                    <input id="registerPassword" name="password" type="password" minlength="8" autocomplete="new-password" required>
+                    <button class="password-toggle" type="button" aria-label="Mostrar contraseña" title="Mostrar contraseña" aria-pressed="false" onclick="togglePasswordVisibility('registerPassword', this)">
+                        <svg class="password-eye" viewBox="0 0 24 24" aria-hidden="true"><path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7S2 12 2 12Z"/><circle cx="12" cy="12" r="3"/></svg>
+                        <svg class="password-eye-off" viewBox="0 0 24 24" aria-hidden="true"><path d="m3 3 18 18M10.6 10.6a2 2 0 0 0 2.8 2.8"/><path d="M9.9 5.2A10.7 10.7 0 0 1 12 5c6.4 0 10 7 10 7a15 15 0 0 1-3 3.8M6.2 6.2C3.5 8 2 12 2 12s3.6 7 10 7a10.7 10.7 0 0 0 3-.4"/></svg>
+                    </button>
+                </div>
+            </div>
+            <div class="form">
+                <label for="registerPasswordConfirm">Confirmar contraseña</label>
+                <div class="password-input-wrap">
+                    <input id="registerPasswordConfirm" name="passwordConfirm" type="password" minlength="8" autocomplete="new-password" required>
+                    <button class="password-toggle" type="button" aria-label="Mostrar contraseña" title="Mostrar contraseña" aria-pressed="false" onclick="togglePasswordVisibility('registerPasswordConfirm', this)">
+                        <svg class="password-eye" viewBox="0 0 24 24" aria-hidden="true"><path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7S2 12 2 12Z"/><circle cx="12" cy="12" r="3"/></svg>
+                        <svg class="password-eye-off" viewBox="0 0 24 24" aria-hidden="true"><path d="m3 3 18 18M10.6 10.6a2 2 0 0 0 2.8 2.8"/><path d="M9.9 5.2A10.7 10.7 0 0 1 12 5c6.4 0 10 7 10 7a15 15 0 0 1-3 3.8M6.2 6.2C3.5 8 2 12 2 12s3.6 7 10 7a10.7 10.7 0 0 0 3-.4"/></svg>
+                    </button>
+                </div>
+            </div>
+            <div class="form">
+                <label for="registerGrade">Grado (opcional)</label>
+                <select id="registerGrade" name="grade">
+                    <option value="">Selecciona un grado</option>
+                    <option>1.º de secundaria</option>
+                    <option>2.º de secundaria</option>
+                    <option>3.º de secundaria</option>
+                    <option>4.º de secundaria</option>
+                    <option>5.º de secundaria</option>
+                </select>
+            </div>
+
+            <fieldset class="account-type-fieldset">
+                <legend>Tipo de cuenta</legend>
+                <label class="account-type-option">
+                    <input type="radio" name="accountType" value="teacher" required>
+                    <span><strong>Profesor</strong><small>Acceso al espacio reservado para profesores.</small></span>
+                </label>
+                <label class="account-type-option">
+                    <input type="radio" name="accountType" value="student">
+                    <span><strong>Estudiante</strong><small>Acceso al panel de Study Hub.</small></span>
+                </label>
+                <label class="account-type-option">
+                    <input type="radio" name="accountType" value="personal">
+                    <span><strong>Usuario personal</strong><small>Acceso al panel de Study Hub.</small></span>
+                </label>
+            </fieldset>
+
+            <button class="primary access-submit" type="submit">Crear cuenta</button>
+            <p class="access-switch">
+                ¿Ya tienes una cuenta?
+                <button type="button" onclick="showAccessMode('login')">Inicia sesión</button>
+            </p>
+        </form>
+
+        <form id="loginForm" onsubmit="loginAccount(event)" hidden>
+            <div class="form">
+                <label for="loginEmail">Correo electrónico</label>
+                <input id="loginEmail" name="email" type="email" autocomplete="email" required>
+            </div>
+            <div class="form">
+                <label for="loginPassword">Contraseña</label>
+                <div class="password-input-wrap">
+                    <input id="loginPassword" name="password" type="password" autocomplete="current-password" required>
+                    <button class="password-toggle" type="button" aria-label="Mostrar contraseña" title="Mostrar contraseña" aria-pressed="false" onclick="togglePasswordVisibility('loginPassword', this)">
+                        <svg class="password-eye" viewBox="0 0 24 24" aria-hidden="true"><path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7S2 12 2 12Z"/><circle cx="12" cy="12" r="3"/></svg>
+                        <svg class="password-eye-off" viewBox="0 0 24 24" aria-hidden="true"><path d="m3 3 18 18M10.6 10.6a2 2 0 0 0 2.8 2.8"/><path d="M9.9 5.2A10.7 10.7 0 0 1 12 5c6.4 0 10 7 10 7a15 15 0 0 1-3 3.8M6.2 6.2C3.5 8 2 12 2 12s3.6 7 10 7a10.7 10.7 0 0 0 3-.4"/></svg>
+                    </button>
+                </div>
+            </div>
+            <button class="primary access-submit" type="submit">Iniciar sesión</button>
+            <p class="access-switch">
+                ¿No tienes una cuenta?
+                <button type="button" onclick="showAccessMode('register')">Regístrate</button>
+            </p>
+        </form>
+    </div>
+</section>
+
+<section id="teacherPortal" class="teacher-portal" aria-label="Espacio de profesores" hidden>
+    <button class="secondary" type="button" onclick="logout()">Cerrar sesión</button>
 </section>
 
 
@@ -939,6 +1063,7 @@
 
                     <select id="gradeInput">
 
+                        <option value="">Selecciona un grado</option>
                         <option>1.º de secundaria</option>
                         <option>2.º de secundaria</option>
                         <option>3.º de secundaria</option>
@@ -955,7 +1080,7 @@
                     <button
                         class="primary"
                         onclick="saveAccount()">
-                        Crear / guardar cuenta
+                        Guardar cambios
                     </button>
 
                     <button
@@ -970,7 +1095,7 @@
 
 
             <div class="section">
-                <h3>Seleccionar otra cuenta</h3>
+                <h3>Cambiar de cuenta</h3>
             </div>
 
 

@@ -165,9 +165,17 @@ backend local. Para que estén disponibles por Internet:
 3. Aloja el backend con Node.js 18 o posterior y actualiza la etiqueta `study-hub-api` del frontend con la URL pública del backend.
 
 Si las variables de Supabase están configuradas, las clases se guardan en la nube;
-si no, se usa el archivo local. Las cuentas de esta versión son perfiles locales,
-no una autenticación segura: las clases no guardan los correos de los estudiantes,
-pero cualquiera que obtenga un código puede intentar unirse.
+si no, se usa el archivo local. Las clases compartidas no verifican la identidad
+del usuario: cualquier persona que obtenga un código puede intentar unirse.
+
+El acceso de esta versión también es local al navegador: reutiliza `studyAccounts`,
+guarda la contraseña como un hash PBKDF2 y mantiene la sesión en ese mismo
+navegador. No es autenticación multiusuario para producción ni sincroniza cuentas
+entre dispositivos. Los registros incluyen `email` y `accountType` (`teacher`,
+`student` o `personal`) para que Study Hub Core pueda migrarlos; la autenticación
+del servidor Python deberá validar las credenciales y gestionar las sesiones en
+el servidor antes de publicar el servicio. El acceso no modifica ni sustituye la
+API actual de clases.
 
 ## Uso del asistente IA
 

@@ -148,7 +148,7 @@ function isStudyHubStorageKey(key){
 
     return (
         /^(studyAccounts|studyCurrentAccount|studyUsers|studyClasses)$/.test(key) ||
-        /^study_(guest|\d+)_(tasks|hours|activity|board)$/.test(key)
+        /^study_(guest|[\w-]+)_(tasks|hours|activity|board)$/.test(key)
     );
 
 }
@@ -510,6 +510,18 @@ document.addEventListener(
 
         setupCanvas();
 
+        const activeAccount =
+            accounts.find(
+                account =>
+                    String(account.id) ===
+                    String(currentAccount)
+            );
+
+        if(!activeAccount){
+            currentAccount = null;
+            localStorage.removeItem("studyCurrentAccount");
+        }
+
         loadUserData();
 
         loadProfile();
@@ -543,6 +555,10 @@ document.addEventListener(
                 }
             );
 
+        if(currentAccount){
+            enterApp();
+        }
+
     }
 );
 
@@ -553,9 +569,30 @@ document.addEventListener(
 
 function enterApp(){
 
+    const account =
+        accounts.find(
+            item =>
+                String(item.id) ===
+                String(currentAccount)
+        );
+
+    if(!account){
+        openAccountPage("register");
+        return;
+    }
+
     document.getElementById(
         "landing"
     ).style.display = "none";
+
+    document.getElementById("access").hidden = true;
+    document.getElementById("teacherPortal").hidden = true;
+
+    if(account.accountType === "teacher"){
+        document.getElementById("app").classList.remove("active");
+        document.getElementById("teacherPortal").hidden = false;
+        return;
+    }
 
     document.getElementById(
         "app"
@@ -567,38 +604,304 @@ function enterApp(){
 
 function openAccountPage(mode){
 
-    enterApp();
+    showAccessMode(mode);
 
-    showPage("profile");
+}
 
-    if(mode === "register"){
+function showLanding(){
 
-        document.getElementById(
-            "nameInput"
-        ).focus();
+    document.getElementById("app").classList.remove("active");
+    document.getElementById("access").hidden = true;
+    document.getElementById("teacherPortal").hidden = true;
+    document.getElementById("landing").style.display = "";
 
+}
+
+function showAccessMode(mode){
+
+    const selectedMode =
+        mode === "login"
+            ? "login"
+            : "register";
+
+    document.querySelectorAll(".password-toggle").forEach(
+        button => {
+            const input = button.previousElementSibling;
+
+            input.type = "password";
+            button.setAttribute("aria-pressed", "false");
+            button.setAttribute("aria-label", "Mostrar contraseña");
+            button.setAttribute("title", "Mostrar contraseña");
+        }
+    );
+
+    document.getElementById("landing").style.display = "none";
+    document.getElementById("app").classList.remove("active");
+    document.getElementById("teacherPortal").hidden = true;
+    document.getElementById("access").hidden = false;
+
+    const registering =
+        selectedMode === "register";
+
+    document.getElementById("registerForm").hidden = !registering;
+    document.getElementById("loginForm").hidden = registering;
+    document.getElementById("registerTab").setAttribute(
+        "aria-selected",
+        String(registering)
+    );
+    document.getElementById("loginTab").setAttribute(
+        "aria-selected",
+        String(!registering)
+    );
+    document.getElementById("accessTitle").textContent =
+        registering ? "Crear cuenta" : "Iniciar sesión";
+    document.getElementById("accessDescription").textContent =
+        registering
+            ? "Regístrate para empezar a usar Study Hub."
+            : "Ingresa con tu correo y contraseña.";
+
+    const firstInput =
+        document.querySelector(
+            registering
+                ? "#registerForm input"
+                : "#loginForm input"
+        );
+
+    if(firstInput){
+        firstInput.focus();
+    }
+
+}
+
+function togglePasswordVisibility(inputId, button){
+
+    const input =
+        document.getElementById(inputId);
+
+    if(!input){
         return;
+    }
+
+    const shouldReveal =
+        input.type === "password";
+
+    input.type =
+        shouldReveal ? "text" : "password";
+
+    button.setAttribute(
+        "aria-pressed",
+        String(shouldReveal)
+    );
+    button.setAttribute(
+        "aria-label",
+        shouldReveal ? "Ocultar contraseña" : "Mostrar contraseña"
+    );
+    button.setAttribute(
+        "title",
+        shouldReveal ? "Ocultar contraseña" : "Mostrar contraseña"
+    );
+
+}
+
+function bytesToHex(bytes){
+
+    return Array.from(
+        bytes,
+        byte => byte.toString(16).padStart(2, "0")
+    ).join("");
+
+}
+
+async function hashPassword(password, saltHex, iterations = 210000){
+
+    if(!window.crypto || !window.crypto.subtle){
+        throw new Error(
+            "El navegador no ofrece almacenamiento seguro de contraseñas. Usa localhost o una conexión HTTPS."
+        );
+    }
+
+    const salt =
+        Uint8Array.from(
+            saltHex.match(/.{2}/g) || [],
+            byte => parseInt(byte, 16)
+        );
+
+    if(salt.length !== 16){
+        throw new Error("No se pudo validar la contraseña de esta cuenta.");
+    }
+
+    const key =
+        await crypto.subtle.importKey(
+            "raw",
+            new TextEncoder().encode(password),
+            "PBKDF2",
+            false,
+            ["deriveBits"]
+        );
+
+    const digest =
+        await crypto.subtle.deriveBits(
+            {
+                name:"PBKDF2",
+                hash:"SHA-256",
+                salt,
+                iterations
+            },
+            key,
+            256
+        );
+
+    return bytesToHex(new Uint8Array(digest));
+
+}
+
+async function registerAccount(event){
+
+    event.preventDefault();
+
+    const name =
+        document.getElementById("registerName").value.trim();
+    const emailInput =
+        document.getElementById("registerEmail");
+    const email =
+        emailInput.value.trim().toLowerCase();
+    const password =
+        document.getElementById("registerPassword").value;
+    const passwordConfirm =
+        document.getElementById("registerPasswordConfirm").value;
+    const accountTypeInput =
+        document.querySelector('input[name="accountType"]:checked');
+
+    if(!name || !email || !emailInput.checkValidity() || !accountTypeInput){
+        toast("Completa los campos obligatorios y elige un tipo de cuenta.");
+        return;
+    }
+
+    if(password.length < 8){
+        toast("La contraseña debe tener al menos 8 caracteres.");
+        return;
+    }
+
+    if(password !== passwordConfirm){
+        toast("Las contraseñas no coinciden.");
+        return;
+    }
+
+    const existingAccount =
+        accounts.find(
+            account =>
+                String(account.email || "").trim().toLowerCase() === email
+        );
+
+    if(existingAccount && existingAccount.passwordHash){
+        toast("Ya existe una cuenta con ese correo. Inicia sesión.");
+        document.getElementById("loginEmail").value = email;
+        showAccessMode("login");
+        return;
+    }
+
+    try{
+
+        const salt =
+            bytesToHex(crypto.getRandomValues(new Uint8Array(16)));
+        const passwordHash =
+            await hashPassword(password, salt);
+        const account =
+            existingAccount || {
+                id:crypto.randomUUID
+                    ? crypto.randomUUID()
+                    : `${Date.now()}-${Math.random().toString(16).slice(2)}`,
+                email
+            };
+
+        Object.assign(account, {
+            name,
+            email,
+            grade:document.getElementById("registerGrade").value,
+            accountType:accountTypeInput.value,
+            passwordSalt:salt,
+            passwordHash,
+            passwordIterations:210000
+        });
+
+        if(!existingAccount){
+            accounts.push(account);
+        }
+
+        writeJSON("studyAccounts", accounts);
+        renderAccounts();
+        document.getElementById("registerForm").reset();
+        showLanding();
+        toast("Cuenta creada correctamente. Ya puedes iniciar sesión.");
+
+    }catch(error){
+
+        console.error("No se pudo crear la cuenta:", error);
+        toast(error.message || "No se pudo crear la cuenta.");
 
     }
 
-    const accountsList =
-        document.getElementById("accounts");
+}
 
-    accountsList.scrollIntoView({
-        behavior:"smooth",
-        block:"center"
-    });
+async function loginAccount(event){
 
-    const firstAccountButton =
-        accountsList.querySelector("button");
+    event.preventDefault();
 
-    if(firstAccountButton){
-        firstAccountButton.focus();
+    const email =
+        document.getElementById("loginEmail").value.trim().toLowerCase();
+    const password =
+        document.getElementById("loginPassword").value;
+    const account =
+        accounts.find(
+            item =>
+                String(item.email || "").trim().toLowerCase() === email
+        );
+
+    if(!account){
+        toast("No encontramos una cuenta con ese correo. Regístrate para continuar.");
+        return;
     }
-    else{
-        document.getElementById(
-            "nameInput"
-        ).focus();
+
+    if(!account.passwordHash || !account.passwordSalt){
+        document.getElementById("registerEmail").value = email;
+        showAccessMode("register");
+        toast("Esta cuenta anterior no tiene contraseña. Completa el registro con el mismo correo para conservar tus datos.");
+        return;
+    }
+
+    try{
+
+        const passwordHash =
+            await hashPassword(
+                password,
+                account.passwordSalt,
+                Number(account.passwordIterations) || 210000
+            );
+
+        if(passwordHash !== account.passwordHash){
+            toast("El correo o la contraseña no son correctos.");
+            return;
+        }
+
+        currentAccount = String(account.id);
+        localStorage.setItem("studyCurrentAccount", currentAccount);
+        loadUserData();
+        loadProfile();
+        renderAccounts();
+        renderAll();
+        renderStudyUser();
+        renderClasses();
+        undoStack = [];
+        redoStack = [];
+        document.getElementById("loginForm").reset();
+        enterApp();
+        toast("Sesión iniciada correctamente.");
+
+    }catch(error){
+
+        console.error("No se pudo iniciar sesión:", error);
+        toast(error.message || "No se pudo iniciar sesión.");
+
     }
 
 }
@@ -2369,6 +2672,19 @@ function clearCanvas(){
 
 function saveAccount(){
 
+    const account =
+        accounts.find(
+            item =>
+                String(item.id) ===
+                String(currentAccount)
+        );
+
+    if(!account){
+        toast("Inicia sesión para editar tu perfil.");
+        openAccountPage("login");
+        return;
+    }
+
     const name =
         document
             .getElementById("nameInput")
@@ -2382,6 +2698,9 @@ function saveAccount(){
             .trim()
             .toLowerCase();
 
+    const emailInput =
+        document.getElementById("emailInput");
+
     const grade =
         document
             .getElementById("gradeInput")
@@ -2390,7 +2709,7 @@ function saveAccount(){
     if(
         !name ||
         !email ||
-        !email.includes("@")
+        !emailInput.checkValidity()
     ){
 
         toast(
@@ -2401,50 +2720,42 @@ function saveAccount(){
 
     }
 
-    let account =
+    const duplicateEmail =
         accounts.find(
             item =>
-                item.email === email
+                item.email === email &&
+                String(item.id) !== String(account.id)
         );
 
-    if(account){
-
-        account.name =
-            name;
-
-        account.grade =
-            grade;
-
+    if(duplicateEmail){
+        toast("Ese correo ya está asociado a otra cuenta.");
+        return;
     }
-    else{
 
-        account = {
+    account.name = name;
+    account.email = email;
+    account.grade = grade;
 
-            id:
-                Date.now(),
-
-            name:
-                name,
-
-            email:
-                email,
-
-            grade:
-                grade
-
-        };
-
-        accounts.push(
-            account
-        );
-
-    }
+    studyUsers.forEach(
+        user => {
+            if(
+                String(user.accountId) === String(account.id) ||
+                user.email === emailInput.dataset.previousEmail
+            ){
+                user.name = name;
+                user.email = email;
+                user.accountId = String(account.id);
+            }
+        }
+    );
 
     writeJSON(
         "studyAccounts",
         accounts
     );
 
+    writeJSON("studyUsers", studyUsers);
+    emailInput.dataset.previousEmail = email;
     currentAccount =
         String(account.id);
 
@@ -2460,6 +2771,8 @@ function saveAccount(){
     renderAccounts();
 
     renderAll();
+    renderStudyUser();
+    renderClasses();
 
     requestAnimationFrame(
         () => {
@@ -2472,7 +2785,7 @@ function saveAccount(){
     );
 
     toast(
-        "Cuenta guardada correctamente."
+        "Perfil actualizado correctamente."
     );
 
 }
@@ -2549,6 +2862,8 @@ function deleteCurrentAccount(){
         "studyCurrentAccount"
     );
 
+    showLanding();
+
     tasks = [];
 
     hours = 0;
@@ -2623,6 +2938,8 @@ function loadProfile(){
         document.getElementById(
             "emailInput"
         ).value = "";
+        document.getElementById("emailInput").dataset.previousEmail = "";
+        document.getElementById("gradeInput").value = "";
 
         return;
 
@@ -2638,7 +2955,9 @@ function loadProfile(){
     ).textContent =
         account.email +
         " · " +
-        account.grade;
+        (account.grade || "Sin grado") +
+        " · " +
+        accountTypeName(account.accountType);
 
     document.getElementById(
         "avatar"
@@ -2655,6 +2974,8 @@ function loadProfile(){
     document.getElementById(
         "emailInput"
     ).value =
+        account.email;
+    document.getElementById("emailInput").dataset.previousEmail =
         account.email;
 
     document.getElementById(
@@ -2714,7 +3035,8 @@ function renderAccounts(){
                             <div
                                 class="muted"
                                 style="margin-top:3px">
-                                ${escapeHTML(account.grade)}
+                                ${escapeHTML(account.grade || "Sin grado")} ·
+                                ${escapeHTML(accountTypeName(account.accountType))}
                             </div>
 
                         </div>
@@ -2722,7 +3044,7 @@ function renderAccounts(){
                         <button
                             class="secondary"
                             onclick="selectAccount('${String(account.id)}')">
-                            Seleccionar
+                            Iniciar sesión
                         </button>
 
                     </div>
@@ -2736,39 +3058,20 @@ function renderAccounts(){
 
 function selectAccount(id){
 
-    currentAccount =
-        String(id);
+    const account =
+        accounts.find(
+            item => String(item.id) === String(id)
+        );
 
-    localStorage.setItem(
-        "studyCurrentAccount",
-        currentAccount
-    );
+    if(!account){
+        toast("No se encontró esa cuenta.");
+        return;
+    }
 
-    loadUserData();
-
-    loadProfile();
-
-    renderAccounts();
-
-    renderAll();
-
-    undoStack = [];
-
-    redoStack = [];
-
-    requestAnimationFrame(
-        () => {
-
-            if(currentPage === "board"){
-                resizeCanvas(false);
-            }
-
-        }
-    );
-
-    toast(
-        "Cuenta seleccionada."
-    );
+    currentAccount = null;
+    localStorage.removeItem("studyCurrentAccount");
+    document.getElementById("loginEmail").value = account.email;
+    showAccessMode("login");
 
 }
 
@@ -2789,9 +3092,23 @@ function logout(){
 
     renderAll();
 
+    showLanding();
+
     toast(
         "Sesión cerrada."
     );
+
+}
+
+function accountTypeName(accountType){
+
+    const names = {
+        teacher:"Profesor",
+        student:"Estudiante",
+        personal:"Usuario personal"
+    };
+
+    return names[accountType] || "Usuario personal";
 
 }
 
@@ -2803,6 +3120,18 @@ function logout(){
 function selectRole(role){
 
     if(role !== "teacher" && role !== "student"){
+        return;
+    }
+
+    const activeAccount =
+        accounts.find(
+            account =>
+                String(account.id) ===
+                String(currentAccount)
+        );
+
+    if(role === "teacher" && activeAccount?.accountType !== "teacher"){
+        toast("Las cuentas de profesor acceden a su espacio reservado al iniciar sesión.");
         return;
     }
 
@@ -2830,11 +3159,9 @@ function selectRole(role){
         role === "teacher" ? "block" : "none";
 
     const savedUser =
-        studyUsers.find(
-            user => user.role === role
-        );
+        getCurrentStudyUser();
 
-    if(savedUser){
+    if(savedUser && savedUser.role === role){
 
         document.getElementById(
             "userName"
@@ -2876,7 +3203,8 @@ function selectRole(role){
     else{
 
         document.getElementById("userName").value = "";
-        document.getElementById("userEmail").value = "";
+        document.getElementById("userEmail").value =
+            activeAccount?.email || "";
         document.getElementById("userInstitution").value = "";
         document.getElementById("userCampus").value = "";
         document.getElementById("userGrade").value = "";
@@ -2895,6 +3223,18 @@ function selectRole(role){
 
 function saveStudyUser(){
 
+    const activeAccount =
+        accounts.find(
+            account =>
+                String(account.id) ===
+                String(currentAccount)
+        );
+
+    if(!activeAccount){
+        toast("Inicia sesión para guardar tus datos.");
+        return;
+    }
+
     if(!selectedRole){
 
         toast(
@@ -2912,11 +3252,7 @@ function saveStudyUser(){
             .trim();
 
     const email =
-        document
-            .getElementById("userEmail")
-            .value
-            .trim()
-            .toLowerCase();
+        String(activeAccount.email).trim().toLowerCase();
 
     const institution =
         document
@@ -2936,7 +3272,6 @@ function saveStudyUser(){
     if(
         !name ||
         !email ||
-        !emailInput.checkValidity() ||
         !institution ||
         !campus
     ){
@@ -2948,6 +3283,8 @@ function saveStudyUser(){
         return;
 
     }
+
+    emailInput.value = email;
 
     const grade =
         selectedRole === "student"
@@ -2988,13 +3325,15 @@ function saveStudyUser(){
     let user =
         studyUsers.find(
             item =>
-                item.email === email
+                String(item.accountId) === String(activeAccount.id) ||
+                String(item.email || "").trim().toLowerCase() === email
         );
 
     if(user){
         Object.assign(user, {
             name,
             email,
+            accountId:String(activeAccount.id),
             role:selectedRole,
             institution,
             campus,
@@ -3009,6 +3348,7 @@ function saveStudyUser(){
             id:Date.now(),
             name,
             email,
+            accountId:String(activeAccount.id),
             role:selectedRole,
             institution,
             campus,
@@ -3062,12 +3402,36 @@ function renderStudyUser(){
     const user =
         getCurrentStudyUser();
 
+    const activeAccount =
+        accounts.find(
+            account =>
+                String(account.id) ===
+                String(currentAccount)
+        );
+
+    document.getElementById("userEmail").value =
+        activeAccount?.email || "";
+
     if(!user){
 
         result.classList.remove("open");
-
+        document.getElementById("userForm").classList.remove("open");
         document.getElementById("teacherPanel").style.display = "none";
         document.getElementById("studentPanel").style.display = "none";
+        document.getElementById("userName").value = "";
+        document.getElementById("userInstitution").value = "";
+        document.getElementById("userCampus").value = "";
+        document.getElementById("userGrade").value = "";
+        document.getElementById("userSection").value = "";
+        selectedRole = null;
+        document.querySelectorAll(".user-type").forEach(
+            element => element.classList.remove("selected")
+        );
+        document.querySelectorAll('input[name="teacherGrades"]').forEach(
+            input => {
+                input.checked = false;
+            }
+        );
 
         return;
 
@@ -3076,6 +3440,16 @@ function renderStudyUser(){
     if(user.role !== "teacher" && user.role !== "student"){
         result.classList.remove("open");
         document.getElementById("userForm").classList.remove("open");
+        document.getElementById("teacherPanel").style.display = "none";
+        document.getElementById("studentPanel").style.display = "none";
+        return;
+    }
+
+    if(
+        user.role === "teacher" &&
+        activeAccount?.accountType !== "teacher"
+    ){
+        result.classList.remove("open");
         document.getElementById("teacherPanel").style.display = "none";
         document.getElementById("studentPanel").style.display = "none";
         return;
@@ -3200,20 +3574,22 @@ function renderStudyUser(){
 
 function getCurrentStudyUser(){
 
-    const email =
-        document
-            .getElementById("userEmail")
-            .value
-            .trim()
-            .toLowerCase();
+    const activeAccount =
+        accounts.find(
+            account =>
+                String(account.id) ===
+                String(currentAccount)
+        );
 
-    if(!email){
+    if(!activeAccount){
         return null;
     }
 
     return studyUsers.find(
         user =>
-            user.email === email
+            String(user.accountId) === String(activeAccount.id) ||
+            String(user.email || "").trim().toLowerCase() ===
+                String(activeAccount.email).trim().toLowerCase()
     ) || null;
 
 }
