@@ -13,6 +13,8 @@ La plataforma combina una interfaz amigable con funcionalidades de organización
 - monitorizar horas de estudio,
 - registrar ideas y apuntes rápidos,
 - personalizar el perfil del estudiante,
+- permitir que las cuentas de profesor creen clases y compartan un código,
+- mostrar la opción de unirse a clase a estudiantes y usuarios personales, desactivada mientras se implementa,
 - consultar dudas académicas con un asistente basado en IA.
 
 ## Funciones destacadas

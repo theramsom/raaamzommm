@@ -70,8 +70,6 @@ let redoStack = [];
    USUARIOS / CLASES
 ========================= */
 
-let selectedRole = null;
-
 let studyUsers =
     readJSON(
         "studyUsers",
@@ -586,19 +584,16 @@ function enterApp(){
     ).style.display = "none";
 
     document.getElementById("access").hidden = true;
-    document.getElementById("teacherPortal").hidden = true;
-
-    if(account.accountType === "teacher"){
-        document.getElementById("app").classList.remove("active");
-        document.getElementById("teacherPortal").hidden = false;
-        return;
-    }
-
     document.getElementById(
         "app"
     ).classList.add("active");
 
-    showPage("home",true);
+    showPage(
+        account.accountType === "teacher"
+            ? "classes"
+            : "home",
+        true
+    );
 
 }
 
@@ -612,7 +607,6 @@ function showLanding(){
 
     document.getElementById("app").classList.remove("active");
     document.getElementById("access").hidden = true;
-    document.getElementById("teacherPortal").hidden = true;
     document.getElementById("landing").style.display = "";
 
 }
@@ -637,7 +631,6 @@ function showAccessMode(mode){
 
     document.getElementById("landing").style.display = "none";
     document.getElementById("app").classList.remove("active");
-    document.getElementById("teacherPortal").hidden = true;
     document.getElementById("access").hidden = false;
 
     const registering =
@@ -1021,9 +1014,9 @@ function showPage(
             "Tu espacio de ayuda."
         ],
 
-        users:[
-            "Sistema de usuarios",
-            "Administra tus datos y preferencias."
+        classes:[
+            "Clases",
+            "Crea una clase o revisa el estado de la opción para unirte."
         ],
 
         performance:[
@@ -3113,461 +3106,27 @@ function accountTypeName(accountType){
 }
 
 
-/* =========================
-   SISTEMA DE USUARIOS
-========================= */
-
-function selectRole(role){
-
-    if(role !== "teacher" && role !== "student"){
-        return;
-    }
-
-    const activeAccount =
-        accounts.find(
-            account =>
-                String(account.id) ===
-                String(currentAccount)
-        );
-
-    if(role === "teacher" && activeAccount?.accountType !== "teacher"){
-        toast("Las cuentas de profesor acceden a su espacio reservado al iniciar sesión.");
-        return;
-    }
-
-    selectedRole = role;
-
-    document
-        .querySelectorAll(".user-type")
-        .forEach(
-            element =>
-                element.classList.remove("selected")
-        );
-
-    document
-        .getElementById("role-" + role)
-        .classList.add("selected");
-
-    document
-        .getElementById("userForm")
-        .classList.add("open");
-
-    document.getElementById("studentFields").style.display =
-        role === "student" ? "block" : "none";
-
-    document.getElementById("teacherFields").style.display =
-        role === "teacher" ? "block" : "none";
-
-    const savedUser =
-        getCurrentStudyUser();
-
-    if(savedUser && savedUser.role === role){
-
-        document.getElementById(
-            "userName"
-        ).value =
-            savedUser.name;
-
-        document.getElementById(
-            "userEmail"
-        ).value =
-            savedUser.email;
-
-        document.getElementById("userInstitution").value =
-            savedUser.institution || savedUser.institutionName || "";
-
-        document.getElementById("userCampus").value =
-            savedUser.campus || "";
-
-        document.getElementById("userGrade").value =
-            savedUser.grade || "";
-
-        document.getElementById("userSection").value =
-            savedUser.section || "";
-
-        const teachingGrades =
-            Array.isArray(savedUser.teachingGrades)
-                ? savedUser.teachingGrades
-                : [];
-
-        document
-            .querySelectorAll('input[name="teacherGrades"]')
-            .forEach(
-                input => {
-                    input.checked =
-                        teachingGrades.includes(input.value);
-                }
-            );
-
-    }
-    else{
-
-        document.getElementById("userName").value = "";
-        document.getElementById("userEmail").value =
-            activeAccount?.email || "";
-        document.getElementById("userInstitution").value = "";
-        document.getElementById("userCampus").value = "";
-        document.getElementById("userGrade").value = "";
-        document.getElementById("userSection").value = "";
-
-        document
-            .querySelectorAll('input[name="teacherGrades"]')
-            .forEach(input => {
-                input.checked = false;
-            });
-
-    }
-
-}
-
-
-function saveStudyUser(){
-
-    const activeAccount =
-        accounts.find(
-            account =>
-                String(account.id) ===
-                String(currentAccount)
-        );
-
-    if(!activeAccount){
-        toast("Inicia sesión para guardar tus datos.");
-        return;
-    }
-
-    if(!selectedRole){
-
-        toast(
-            "Primero elige un tipo de usuario."
-        );
-
-        return;
-
-    }
-
-    const name =
-        document
-            .getElementById("userName")
-            .value
-            .trim();
-
-    const email =
-        String(activeAccount.email).trim().toLowerCase();
-
-    const institution =
-        document
-            .getElementById("userInstitution")
-            .value
-            .trim();
-
-    const campus =
-        document
-            .getElementById("userCampus")
-            .value
-            .trim();
-
-    const emailInput =
-        document.getElementById("userEmail");
-
-    if(
-        !name ||
-        !email ||
-        !institution ||
-        !campus
-    ){
-
-        toast(
-            "Completa tu nombre, correo válido, institución y sede."
-        );
-
-        return;
-
-    }
-
-    emailInput.value = email;
-
-    const grade =
-        selectedRole === "student"
-            ? document.getElementById("userGrade").value
-            : "";
-
-    const section =
-        selectedRole === "student"
-            ? document.getElementById("userSection").value.trim()
-            : "";
-
-    const teachingGrades =
-        selectedRole === "teacher"
-            ? Array.from(
-                document.querySelectorAll(
-                    'input[name="teacherGrades"]:checked'
-                ),
-                input => input.value
-            )
-            : [];
-
-    if(
-        selectedRole === "student" &&
-        (!grade || !section)
-    ){
-        toast("Completa el grado y la sección.");
-        return;
-    }
-
-    if(
-        selectedRole === "teacher" &&
-        !teachingGrades.length
-    ){
-        toast("Selecciona al menos un grado que enseñas.");
-        return;
-    }
-
-    let user =
-        studyUsers.find(
-            item =>
-                String(item.accountId) === String(activeAccount.id) ||
-                String(item.email || "").trim().toLowerCase() === email
-        );
-
-    if(user){
-        Object.assign(user, {
-            name,
-            email,
-            accountId:String(activeAccount.id),
-            role:selectedRole,
-            institution,
-            campus,
-            grade,
-            section,
-            teachingGrades
-        });
-    }
-    else{
-
-        user = {
-            id:Date.now(),
-            name,
-            email,
-            accountId:String(activeAccount.id),
-            role:selectedRole,
-            institution,
-            campus,
-            grade,
-            section,
-            teachingGrades
-        };
-
-        studyUsers.push(user);
-
-    }
-
-    delete user.institutionName;
-    delete user.institutionDomain;
-
-    writeJSON(
-        "studyUsers",
-        studyUsers
-    );
-
-    renderStudyUser();
-
-    renderClasses();
-
-    toast(
-        "Usuario guardado correctamente."
-    );
-
-}
-
-
-function roleName(role){
-
-    const names = {
-        teacher:"Profesor",
-        student:"Estudiante"
-    };
-
-    return names[role] || "Perfil existente";
-
-}
-
-
 function renderStudyUser(){
-
-    const result =
-        document.getElementById(
-            "userResult"
-        );
 
     const user =
         getCurrentStudyUser();
 
-    const activeAccount =
-        accounts.find(
-            account =>
-                String(account.id) ===
-                String(currentAccount)
-        );
+    const canCreateClass =
+        user?.role === "teacher";
 
-    document.getElementById("userEmail").value =
-        activeAccount?.email || "";
+    document.getElementById("createClassButton").disabled =
+        !canCreateClass;
 
-    if(!user){
+    document.getElementById("teacherPanel").style.display =
+        user ? "block" : "none";
 
-        result.classList.remove("open");
-        document.getElementById("userForm").classList.remove("open");
-        document.getElementById("teacherPanel").style.display = "none";
-        document.getElementById("studentPanel").style.display = "none";
-        document.getElementById("userName").value = "";
-        document.getElementById("userInstitution").value = "";
-        document.getElementById("userCampus").value = "";
-        document.getElementById("userGrade").value = "";
-        document.getElementById("userSection").value = "";
-        selectedRole = null;
-        document.querySelectorAll(".user-type").forEach(
-            element => element.classList.remove("selected")
-        );
-        document.querySelectorAll('input[name="teacherGrades"]').forEach(
-            input => {
-                input.checked = false;
-            }
-        );
+    document.getElementById("studentPanel").style.display =
+        user ? "block" : "none";
 
-        return;
-
-    }
-
-    if(user.role !== "teacher" && user.role !== "student"){
-        result.classList.remove("open");
-        document.getElementById("userForm").classList.remove("open");
-        document.getElementById("teacherPanel").style.display = "none";
-        document.getElementById("studentPanel").style.display = "none";
-        return;
-    }
-
-    if(
-        user.role === "teacher" &&
-        activeAccount?.accountType !== "teacher"
-    ){
-        result.classList.remove("open");
-        document.getElementById("teacherPanel").style.display = "none";
-        document.getElementById("studentPanel").style.display = "none";
-        return;
-    }
-
-    selectedRole =
-        user.role;
-
-    document
-        .querySelectorAll(".user-type")
-        .forEach(
-            element =>
-                element.classList.remove("selected")
-        );
-
-    const roleButton =
-        document.getElementById(
-            "role-" + user.role
-        );
-
-    if(roleButton){
-        roleButton.classList.add("selected");
-    }
-
-    document.getElementById(
-        "userForm"
-    ).classList.add("open");
-
-    document.getElementById("studentFields").style.display =
-        user.role === "student" ? "block" : "none";
-
-    document.getElementById("teacherFields").style.display =
-        user.role === "teacher" ? "block" : "none";
-
-    document.getElementById("userName").value =
-        user.name || "";
-
-    document.getElementById("userEmail").value =
-        user.email || "";
-
-    document.getElementById("userInstitution").value =
-        user.institution || user.institutionName || "";
-
-    document.getElementById("userCampus").value =
-        user.campus || "";
-
-    document.getElementById("userGrade").value =
-        user.grade || "";
-
-    document.getElementById("userSection").value =
-        user.section || "";
-
-    const teachingGrades =
-        Array.isArray(user.teachingGrades)
-            ? user.teachingGrades
-            : [];
-
-    document
-        .querySelectorAll('input[name="teacherGrades"]')
-        .forEach(
-            input => {
-                input.checked =
-                    teachingGrades.includes(input.value);
-            }
-        );
-
-    result.classList.add("open");
-
-    result.innerHTML = `
-        <div
-            style="
-            display:flex;
-            justify-content:space-between;
-            align-items:center;
-            gap:10px;
-            flex-wrap:wrap;">
-
-            <div>
-                <strong style="font-size:15px">
-                    ${escapeHTML(user.name)}
-                </strong>
-
-                <p
-                    class="muted"
-                    style="margin-top:5px">
-                    ${escapeHTML(user.email)}<br>
-                    ${escapeHTML(user.institution || user.institutionName || "")} ·
-                    ${escapeHTML(user.campus || "")}
-                </p>
-            </div>
-
-            <span class="role-badge">
-                ${roleName(user.role)}
-            </span>
-        </div>
-
-        <p class="muted" style="margin-top:10px">
-            ${
-                user.role === "student"
-                    ? `${escapeHTML(user.grade || "")} · Sección ${escapeHTML(user.section || "")}`
-                    : `Grados que enseña: ${teachingGrades.map(escapeHTML).join(", ")}`
-            }
-        </p>
-    `;
-
-    document.getElementById(
-        "teacherPanel"
-    ).style.display =
-        user.role === "teacher"
-        ? "block"
-        : "none";
-
-    document.getElementById(
-        "studentPanel"
-    ).style.display =
-        user.role === "student"
-        ? "block"
-        : "none";
+    document.getElementById("teacherClassesDescription").textContent =
+        canCreateClass
+            ? "Crea una clase y comparte el código para que tus estudiantes puedan encontrarla."
+            : "La creación de clases está disponible solo para profesores.";
 
 }
 
@@ -3585,12 +3144,38 @@ function getCurrentStudyUser(){
         return null;
     }
 
-    return studyUsers.find(
-        user =>
-            String(user.accountId) === String(activeAccount.id) ||
-            String(user.email || "").trim().toLowerCase() ===
-                String(activeAccount.email).trim().toLowerCase()
-    ) || null;
+    const legacyUser =
+        studyUsers.find(
+            user =>
+                String(user.accountId) === String(activeAccount.id) ||
+                String(user.email || "").trim().toLowerCase() ===
+                    String(activeAccount.email).trim().toLowerCase()
+        );
+
+    [
+        "classOwnerToken",
+        "classStudentToken",
+        "legacyClassIds"
+    ].forEach(key => {
+        if(
+            activeAccount[key] === undefined &&
+            legacyUser?.[key] !== undefined
+        ){
+            activeAccount[key] = legacyUser[key];
+        }
+    });
+
+    return Object.assign(
+        activeAccount,
+        {
+            role:
+                activeAccount.accountType === "teacher"
+                    ? "teacher"
+                    : activeAccount.accountType === "student"
+                        ? "student"
+                        : "personal"
+        }
+    );
 
 }
 
@@ -3633,8 +3218,8 @@ async function classApiRequest(endpoint, options = {}){
 function persistStudyUser(){
 
     writeJSON(
-        "studyUsers",
-        studyUsers
+        "studyAccounts",
+        accounts
     );
 
 }
@@ -3964,6 +3549,11 @@ async function renderClasses(){
 
         }
 
+        if(user.role === "personal"){
+            studentBox.innerHTML =
+                `<div class="empty">Las clases estarán disponibles próximamente para las cuentas personales.</div>`;
+        }
+
     }catch(error){
 
         console.error("No se pudieron cargar las clases:", error);
@@ -3976,6 +3566,10 @@ async function renderClasses(){
         }
 
         if(user.role === "student"){
+            studentBox.innerHTML = message;
+        }
+
+        if(user.role === "personal"){
             studentBox.innerHTML = message;
         }
 
